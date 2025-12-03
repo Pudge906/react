@@ -1,0 +1,12 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 530px;
+  overflow-y: auto;
+}
+
+ul {
+  margin: -1;
+  padding: 0;
+}

@@ -1,0 +1,35 @@
+.main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  max-height: 39%;
+  margin-right: 7%;
+  overflow-y: auto;
+}
+
+.unit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.name {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
