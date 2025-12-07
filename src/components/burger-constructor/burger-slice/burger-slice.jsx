@@ -10,11 +10,14 @@ export function BurgerSlice(props) {
           if (ingredient.type !== 'bun') {
             return (
               <li key={ingredient._id}>
-                <ConstructorElement
-                  text={ingredient.name}
-                  price={ingredient.price}
-                  thumbnail={ingredient.image}
-                />
+                <section>
+                  <img src="/icon.png" alt="Нумерация" className={styles.icon} />
+                  <ConstructorElement
+                    text={ingredient.name}
+                    price={ingredient.price}
+                    thumbnail={ingredient.image}
+                  />
+                </section>
               </li>
             );
           }

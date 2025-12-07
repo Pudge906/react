@@ -3,7 +3,7 @@ import styles from './order.module.css';
 export default function OrderDetails() {
   return (
     <div className={styles.container}>
-      <div className={`text text_type_digits-medium ${styles.orderNumber}`}>012345</div>
+      <div className={`text text_type_digits-medium ${styles.orderNumber}`}>034536</div>
       <div className={`text text_type_main-small ${styles.orderId}`}>
         идентификатор заказа
       </div>

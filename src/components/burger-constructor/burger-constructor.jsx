@@ -40,8 +40,9 @@ export const BurgerConstructor = ({ ingredients }) => {
         />
       </div>
       <div className={styles.price}>
-        <div className="text text_type_digits-medium">
-          610 <CurrencyIcon type="primary" className={styles.Icon} />
+        <div className="text text_type_digits-medium ">
+          610
+          <CurrencyIcon type="primary" className={styles.icon} />
         </div>
         <Button
           htmlType="button"
