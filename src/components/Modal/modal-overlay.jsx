@@ -2,7 +2,7 @@ import { CloseIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect } from 'react';
 
 import IngredientDetails from '@/components/Modal/ingredient.jsx';
-import OrderDetails from '@components/Modal/order.jsx';
+import OrderDetails from '@/components/Modal/order.jsx';
 
 import styles from './modal-overlay.module.css';
 
