@@ -22,22 +22,29 @@ export const BurgerConstructor = ({ ingredients }) => {
   return (
     <section className={styles.burger_constructor}>
       <div className={styles.section}>
-        <ConstructorElement
-          type="top"
-          isLocked={true}
-          text="Краторная булка N-200i (верх)"
-          price={20}
-          thumbnail={image}
-        />
-        <BurgerSlice ingredients={ingredients} />
-
-        <ConstructorElement
-          type="bottom"
-          isLocked={true}
-          text="Краторная булка N-200i (низ)"
-          price={20}
-          thumbnail={image}
-        />
+        <div className={styles.bun}>
+          <div className={styles.hol}></div>
+          <ConstructorElement
+            type="top"
+            isLocked={true}
+            text="Краторная булка N-200i (верх)"
+            price={20}
+            thumbnail={image}
+          />
+        </div>
+        <div className={styles.scroll}>
+          <BurgerSlice ingredients={ingredients} />
+        </div>
+        <div className={styles.bun}>
+          <div className={styles.hol}></div>
+          <ConstructorElement
+            type="bottom"
+            isLocked={true}
+            text="Краторная булка N-200i (низ)"
+            price={20}
+            thumbnail={image}
+          />
+        </div>
       </div>
       <div className={styles.price}>
         <div className="text text_type_digits-medium ">
@@ -53,6 +60,7 @@ export const BurgerConstructor = ({ ingredients }) => {
           оформить заказ
         </Button>
       </div>
+
       {isModalOpen && <ModalOverlay setIsModalOpen={setIsModalOpen} />}
     </section>
   );

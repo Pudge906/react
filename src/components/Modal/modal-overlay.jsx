@@ -1,3 +1,4 @@
+import { CloseIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect } from 'react';
 
 import IngredientDetails from '@/components/Modal/ingredient.jsx';
@@ -36,7 +37,7 @@ export default function ModalOverlay({ setIsModalOpen, ingredient }) {
           onClick={closeModalOverlay}
           aria-label="Close modal"
         >
-          x
+          <CloseIcon />
         </button>
       </div>
     </div>
