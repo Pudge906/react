@@ -1,4 +1,4 @@
-import styles from './ingredient.module.css';
+import styles from './ingredient-details.module.css';
 
 export default function IngredientDetails({ ingredient }) {
   return (

@@ -6,7 +6,8 @@ import {
 import { useState } from 'react';
 
 import { BurgerSlice } from '@components/burger-constructor/burger-slice/burger-slice.jsx';
-import ModalOverlay from '@components/Modal/modal-overlay.jsx';
+import Modal from '@components/Modal/Modal.jsx';
+import OrderDetails from '@components/Modal/order-details.jsx';
 
 import styles from './burger-constructor.module.css';
 
@@ -60,8 +61,11 @@ export const BurgerConstructor = ({ ingredients }) => {
           оформить заказ
         </Button>
       </div>
-
-      {isModalOpen && <ModalOverlay setIsModalOpen={setIsModalOpen} />}
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <OrderDetails />
+        </Modal>
+      )}
     </section>
   );
 };

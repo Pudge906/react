@@ -1,45 +1,51 @@
 import { CloseIcon } from '@krgaa/react-developer-burger-ui-components';
-import { useEffect } from 'react';
-
-import IngredientDetails from '@/components/Modal/ingredient.jsx';
-import OrderDetails from '@/components/Modal/order.jsx';
+import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 import styles from './modal-overlay.module.css';
 
-export default function ModalOverlay({ setIsModalOpen, ingredient }) {
-  const closeModalOverlay = () => {
-    setIsModalOpen(false);
-  };
-  const handleModalContentClick = (e) => {
-    e.stopPropagation();
+export default function ModalOverlay({ children, onClose }) {
+  const modalRef = useRef(null);
+
+  const closeModal = () => {
+    onClose();
   };
 
   useEffect(() => {
-    const handleEscapeKey = (e) => {
+    const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        closeModalOverlay();
+        closeModal();
       }
     };
 
-    document.addEventListener('keydown', handleEscapeKey);
-
+    document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
-  return (
-    <div className={styles.main} onClick={closeModalOverlay}>
-      <div className={styles.modalContent} onClick={handleModalContentClick}>
-        {ingredient ? <IngredientDetails ingredient={ingredient} /> : <OrderDetails />}
+  }, [onClose]);
 
-        <button
-          className={styles.closeButton}
-          onClick={closeModalOverlay}
-          aria-label="Close modal"
-        >
+  const handleOverlayClick = (e) => {
+    if (modalRef.current && !modalRef.current.contains(e.target)) {
+      closeModal();
+    }
+  };
+
+  const modalsContainer = document.getElementById('modals');
+
+  if (!modalsContainer) {
+    console.error('Контейнер #modals не найден в index.html');
+    return null;
+  }
+
+  return createPortal(
+    <div className={styles.main} onClick={handleOverlayClick}>
+      <div className={styles.modalContent} ref={modalRef}>
+        {children}
+        <button className={styles.closeButton} onClick={closeModal}>
           <CloseIcon />
         </button>
       </div>
-    </div>
+    </div>,
+    modalsContainer
   );
 }

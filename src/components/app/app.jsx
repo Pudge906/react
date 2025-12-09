@@ -4,9 +4,9 @@ import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
 
-const BASE_URL = 'https://norma.education-services.ru/api';
-
 import styles from './app.module.css';
+
+const BASE_URL = 'https://norma.education-services.ru/api';
 
 export const App = () => {
   const [ingredients, setIngredients] = useState([]);
