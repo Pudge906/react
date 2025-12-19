@@ -2,8 +2,9 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
-  max-height: 39%;
+  max-height: 40%;
   margin-right: 7%;
+  padding-left: 0;
   overflow-y: auto;
 }
 
@@ -11,6 +12,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
+  gap: 10px;
 }
 
 .name {
@@ -20,7 +22,7 @@
   text-align: center;
 }
 
-.price {
+.price_cristal {
   display: flex;
   align-items: center;
   gap: 4px;

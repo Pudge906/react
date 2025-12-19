@@ -6,7 +6,8 @@ import {
 import { useState } from 'react';
 
 import { BurgerSlice } from '@components/burger-constructor/burger-slice/burger-slice.jsx';
-import ModalOverlay from '@components/Modal/modal-overlay.jsx';
+import Modal from '@components/Modal/Modal.jsx';
+import OrderDetails from '@components/Modal/order-details.jsx';
 
 import styles from './burger-constructor.module.css';
 
@@ -22,26 +23,34 @@ export const BurgerConstructor = ({ ingredients }) => {
   return (
     <section className={styles.burger_constructor}>
       <div className={styles.section}>
-        <ConstructorElement
-          type="top"
-          isLocked={true}
-          text="Краторная булка N-200i (верх)"
-          price={20}
-          thumbnail={image}
-        />
-        <BurgerSlice ingredients={ingredients} />
-
-        <ConstructorElement
-          type="bottom"
-          isLocked={true}
-          text="Краторная булка N-200i (низ)"
-          price={20}
-          thumbnail={image}
-        />
+        <div className={styles.bun}>
+          <div className={styles.hol}></div>
+          <ConstructorElement
+            type="top"
+            isLocked={true}
+            text="Краторная булка N-200i (верх)"
+            price={20}
+            thumbnail={image}
+          />
+        </div>
+        <div className={styles.scroll}>
+          <BurgerSlice ingredients={ingredients} />
+        </div>
+        <div className={styles.bun}>
+          <div className={styles.hol}></div>
+          <ConstructorElement
+            type="bottom"
+            isLocked={true}
+            text="Краторная булка N-200i (низ)"
+            price={20}
+            thumbnail={image}
+          />
+        </div>
       </div>
       <div className={styles.price}>
-        <div className="text text_type_digits-medium">
-          610 <CurrencyIcon type="primary" className={styles.Icon} />
+        <div className="text text_type_digits-medium ">
+          610
+          <CurrencyIcon type="primary" className={styles.icon} />
         </div>
         <Button
           htmlType="button"
@@ -52,7 +61,11 @@ export const BurgerConstructor = ({ ingredients }) => {
           оформить заказ
         </Button>
       </div>
-      {isModalOpen && <ModalOverlay setIsModalOpen={setIsModalOpen} />}
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <OrderDetails />
+        </Modal>
+      )}
     </section>
   );
 };

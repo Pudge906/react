@@ -10,9 +10,10 @@
   justify-content: flex-end;
   align-items: center;
   gap: 5%;
+  margin-top: -40px;
 }
 
-.Icon {
+.icon {
   width: 25px;
   height: 25px;
 }
@@ -20,5 +21,23 @@
 .section {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  align-items: center;
+  gap: 10px;
+  width: 650px;
+}
+
+.bun {
+  display: flex;
+  align-items: center;
+  cursor: auto;
+}
+
+.hol {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.scroll {
+  scrollbar-color: #8585ad #2f2f37;
 }

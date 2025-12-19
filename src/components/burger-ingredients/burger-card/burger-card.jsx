@@ -1,11 +1,12 @@
 import { CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
 
-import ModalOverlay from '@components/Modal/modal-overlay.jsx';
+import IngredientDetails from '@components/Modal/ingredient-details.jsx';
+import Modal from '@components/Modal/Modal.jsx';
 
 import style from './burger-card.module.css';
 
-export function BurgerCard(props) {
+export function IngredientList(props) {
   const { ingredients, bunRef, sauceRef, mainRef, scrollContainerRef } = props;
 
   const buns = ingredients.filter((ingredient) => ingredient.type === 'bun');
@@ -37,7 +38,7 @@ export function BurgerCard(props) {
               >
                 {<img src={bun.image} alt="bun" />}
                 <div className={style.price_cristal}>
-                  <div className="text">{bun.price}</div>
+                  <div className="text text_type_digits-default">{bun.price}</div>
                   <div>
                     <CurrencyIcon type="primary" />
                   </div>
@@ -64,7 +65,7 @@ export function BurgerCard(props) {
               >
                 {<img src={sauce.image} alt="sauce" />}
                 <div className={style.price_cristal}>
-                  <div className="text">{sauce.price}</div>
+                  <div className="text text_type_digits-default">{sauce.price}</div>
                   <div>
                     <CurrencyIcon type="primary" />
                   </div>
@@ -91,7 +92,7 @@ export function BurgerCard(props) {
               >
                 {<img src={main.image} alt="main" />}
                 <div className={style.price_cristal}>
-                  <div className="text">{main.price}</div>
+                  <div className="text text_type_digits-default">{main.price}</div>
                   <div>
                     <CurrencyIcon type="primary" />
                   </div>
@@ -104,9 +105,10 @@ export function BurgerCard(props) {
           </div>
         </div>
       </ul>
-
       {isModalOpen && (
-        <ModalOverlay setIsModalOpen={setIsModalOpen} ingredient={ingredient} />
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <IngredientDetails ingredient={ingredient} />
+        </Modal>
       )}
     </div>
   );
