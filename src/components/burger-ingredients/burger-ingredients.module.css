@@ -14,7 +14,7 @@
   list-style-type: none;
 }
 
-.unit {
+.verticalBlock {
   display: flex;
   flex-direction: column;
   align-items: center;

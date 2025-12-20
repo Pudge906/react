@@ -3,68 +3,113 @@ import {
   ConstructorElement,
   CurrencyIcon,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createOrder } from 'src/services/orderSlice.js';
 
-import { BurgerSlice } from '@components/burger-constructor/burger-slice/burger-slice.jsx';
-import Modal from '@components/Modal/Modal.jsx';
-import OrderDetails from '@components/Modal/order-details.jsx';
+import { BurgerFilling } from '@components/burger-constructor/burger-filling/burger-filling.jsx';
+
+import DropTargetConstructor from './DropTargetConstructor';
 
 import styles from './burger-constructor.module.css';
 
-export const BurgerConstructor = ({ ingredients }) => {
-  console.log(ingredients);
-  const image = 'https://code.s3.yandex.net/react/code/bun-02.png';
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export const BurgerConstructor = () => {
+  const dispatch = useDispatch();
 
-  const getModalOverlay = () => {
-    setIsModalOpen(true);
+  const constructorState = useSelector((state) => state.constructor || {});
+  const orderState = useSelector((state) => state.order || {});
+
+  const bun = constructorState?.bun || null;
+  const ingredients = constructorState?.ingredients || [];
+  const total = constructorState?.total || 0;
+
+  const { loading: orderLoading, error: orderError } = orderState;
+  const canPlaceOrder = bun && ingredients.length > 0;
+
+  const handleCreateOrder = () => {
+    if (!bun) {
+      alert('Добавьте булку!');
+      return;
+    }
+    if (ingredients.length === 0) {
+      alert('Добавьте начинки!');
+      return;
+    }
+
+    const ingredientIds = [bun._id, ...ingredients.map((item) => item._id), bun._id];
+    dispatch(createOrder(ingredientIds));
   };
 
   return (
     <section className={styles.burger_constructor}>
-      <div className={styles.section}>
-        <div className={styles.bun}>
-          <div className={styles.hol}></div>
-          <ConstructorElement
-            type="top"
-            isLocked={true}
-            text="Краторная булка N-200i (верх)"
-            price={20}
-            thumbnail={image}
-          />
+      <DropTargetConstructor>
+        <div className={styles.slice}>
+          <div className={styles.bunSection}>
+            <div className={styles.bunRow}>
+              <div className={styles.placeholder}></div>
+              {bun ? (
+                <ConstructorElement
+                  type="top"
+                  isLocked={true}
+                  text={`${bun.name} (верх)`}
+                  price={bun.price}
+                  thumbnail={bun.image}
+                />
+              ) : (
+                <div
+                  className={`${styles.emptyBunPlaceholder} ${styles.topBunPlaceholder}`}
+                >
+                  Выберите бургер
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.scrollableArea}>
+            <BurgerFilling />
+          </div>
+
+          <div className={styles.bunSection}>
+            <div className={styles.bunRow}>
+              <div className={styles.placeholder}></div>
+              {bun ? (
+                <ConstructorElement
+                  type="bottom"
+                  isLocked={true}
+                  text={`${bun.name} (низ)`}
+                  price={bun.price}
+                  thumbnail={bun.image}
+                />
+              ) : (
+                <div
+                  className={`${styles.emptyBunPlaceholder} ${styles.bottomBunPlaceholder}`}
+                >
+                  Выберите бургер
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-        <div className={styles.scroll}>
-          <BurgerSlice ingredients={ingredients} />
-        </div>
-        <div className={styles.bun}>
-          <div className={styles.hol}></div>
-          <ConstructorElement
-            type="bottom"
-            isLocked={true}
-            text="Краторная булка N-200i (низ)"
-            price={20}
-            thumbnail={image}
-          />
-        </div>
-      </div>
-      <div className={styles.price}>
-        <div className="text text_type_digits-medium ">
-          610
-          <CurrencyIcon type="primary" className={styles.icon} />
+      </DropTargetConstructor>
+
+      <div className={styles.price_button}>
+        <div className="text text_type_digits-medium">
+          {total} <CurrencyIcon type="primary" className={styles.largeIcon} />
         </div>
         <Button
           htmlType="button"
           type="primary"
           size="large"
-          onClick={() => getModalOverlay()}
+          onClick={handleCreateOrder}
+          disabled={!canPlaceOrder || orderLoading}
         >
-          оформить заказ
+          {orderLoading ? 'Оформляем...' : 'Оформить заказ'}
         </Button>
       </div>
-      {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <OrderDetails />
-        </Modal>
+
+      {orderError && (
+        <div className="text text_type_main-default text_color_error mt-2">
+          Ошибка: {orderError}
+        </div>
       )}
     </section>
   );
