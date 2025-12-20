@@ -1,23 +1,14 @@
 import { CloseIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useDispatch } from 'react-redux';
-
-import { closeIngredientModal } from '../../services/ingredientDetailsSlice';
-import { closeOrderModal } from '../../services/orderSlice';
 
 import styles from './modal-overlay.module.css';
 
-export default function ModalOverlay({ children, type = 'ingredient' }) {
+export default function ModalOverlay({ children, onClose }) {
   const modalRef = useRef(null);
-  const dispatch = useDispatch();
 
   const closeModal = () => {
-    if (type === 'ingredient') {
-      dispatch(closeIngredientModal());
-    } else if (type === 'order') {
-      dispatch(closeOrderModal());
-    }
+    onClose();
   };
 
   useEffect(() => {
@@ -31,7 +22,7 @@ export default function ModalOverlay({ children, type = 'ingredient' }) {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [dispatch, type]);
+  }, [onClose]);
 
   const handleOverlayClick = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {

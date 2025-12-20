@@ -1,46 +1,30 @@
-import { useSelector } from 'react-redux';
-
 import styles from './ingredient-details.module.css';
 
-export default function IngredientDetails() {
-  const currentIngredient = useSelector(
-    (state) => state.ingredientDetails?.currentIngredient
-  );
-
-  if (!currentIngredient) {
-    return null;
-  }
-
+export default function IngredientDetails({ ingredient }) {
   return (
     <div className={`${styles.container} text text_type_main-medium`}>
       <h2 className={`text text_type_main-large ${styles.title}`}>Детали ингредиента</h2>
-      <img
-        src={currentIngredient.image}
-        alt={currentIngredient.name}
-        className={styles.image}
-      />
-      <div className={`text text_type_main-large ${styles.name}`}>
-        {currentIngredient.name}
-      </div>
+      <img src={ingredient.image} alt={ingredient.name} className={styles.image} />
+      <div className={`text text_type_main-large ${styles.name}`}>{ingredient.name}</div>
       <div className={styles.nutrition}>
         <div className={styles.nutritionItem}>
           <span className={`text text_type_main-medium ${styles.label}`}>
             Калории, ккал
           </span>
           <span className={`text text_type_main-medium ${styles.label}`}>
-            {currentIngredient.calories}
+            {ingredient.calories}
           </span>
         </div>
         <div className={styles.nutritionItem}>
           <span className={`text text_type_main-medium ${styles.label}`}>Белки, г</span>
           <span className={`text text_type_main-medium ${styles.label}`}>
-            {currentIngredient.proteins}
+            {ingredient.proteins}
           </span>
         </div>
         <div className={styles.nutritionItem}>
           <span className={`text text_type_main-medium ${styles.label}`}>Жиры, г</span>
           <span className={`text text_type_main-medium ${styles.label}`}>
-            {currentIngredient.fat}
+            {ingredient.fat}
           </span>
         </div>
         <div className={styles.nutritionItem}>
@@ -48,7 +32,7 @@ export default function IngredientDetails() {
             Углеводы, г
           </span>
           <span className={`text text_type_main-medium ${styles.label}`}>
-            {currentIngredient.carbohydrates}
+            {ingredient.carbohydrates}
           </span>
         </div>
       </div>

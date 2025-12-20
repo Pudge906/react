@@ -1,61 +1,77 @@
-import { useEffect } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
-import ModalRoot from '@components/Modal/modal_root';
-
-import { fetchIngredients } from '../../services/ingredientsSlice';
 
 import styles from './app.module.css';
 
-export const App = () => {
-  const dispatch = useDispatch();
+const BASE_URL = 'https://norma.education-services.ru/api';
 
-  const { loading, error } = useSelector((state) => state.ingredients);
+export const App = () => {
+  const [ingredients, setIngredients] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchIngredients());
-  }, [dispatch]);
+    fetch(`${BASE_URL}/ingredients`)
+      .then((res) => {
+        // Проверяем ответ
+        if (!res.ok) {
+          throw new Error(`Ошибка ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((json) => {
+        if (json.success && json.data) {
+          setIngredients(json.data);
+        } else {
+          throw new Error('Неверная структура данных от сервера');
+        }
+      })
+      .catch((err) => {
+        console.error('Ошибка при загрузке ингредиентов:', err);
+        setError(err.message);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+  // загрузка ингридентов
+  if (isLoading) {
+    return (
+      <div className={styles.app}>
+        <AppHeader />
+        <div className="text text_type_main-medium mt-20">Загрузка ингредиентов...</div>
+      </div>
+    );
+  }
 
+  // ошибки
   if (error) {
     return (
       <div className={styles.app}>
         <AppHeader />
-        <div className="text text_type_main-medium mt-10 pl-5 text_color_error">
-          Ошибка загрузки данных: {error}
-        </div>
+        <div className="text text_type_main-medium mt-20">Произошла ошибка: {error}</div>
+        <button
+          onClick={() => window.location.reload()}
+          className="text text_type_main-default mt-5"
+        >
+          Обновить страницу
+        </button>
       </div>
     );
   }
-
-  if (loading) {
-    return (
-      <div className={styles.app}>
-        <AppHeader />
-        <div className="text text_type_main-medium mt-10 pl-5">
-          Загрузка ингредиентов...
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className={styles.app}>
-        <AppHeader />
-        <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
-          Соберите бургер
-        </h1>
-        <main className={`${styles.main} pl-5 pr-5`}>
-          <BurgerIngredients />
-          <BurgerConstructor />
-        </main>
-        <ModalRoot />
-      </div>
-    </DndProvider>
+    <div className={styles.app}>
+      <AppHeader />
+      <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
+        Соберите бургер
+      </h1>
+      <main className={`${styles.main} pl-5 pr-5`}>
+        <BurgerIngredients ingredients={ingredients} />
+        <BurgerConstructor ingredients={ingredients} />
+      </main>
+    </div>
   );
 };
