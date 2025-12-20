@@ -1,5 +1,5 @@
 import ModalOverlay from './modal-overlay.jsx';
 
-export default function Modal({ children, onClose }) {
-  return <ModalOverlay onClose={onClose}>{children}</ModalOverlay>;
+export default function Modal({ children, type = 'ingredient' }) {
+  return <ModalOverlay type={type}>{children}</ModalOverlay>;
 }
