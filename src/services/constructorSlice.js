@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid'; // Импортируем библиотеку для генерации UUID
 
 const initialState = {
   bun: null,
@@ -49,14 +50,10 @@ const constructorSlice = createSlice({
         const currentIngredients = Array.isArray(state.ingredients)
           ? state.ingredients
           : [];
-        const newIngredient = {
-          ...action.payload,
-          uniqueId: `${action.payload._id}-${Date.now()}-${Math.random()}`,
-        };
 
         const newState = {
           ...state,
-          ingredients: [...currentIngredients, newIngredient],
+          ingredients: [...currentIngredients, action.payload],
           count: state.count + 1,
           _lastAdd: now,
         };
@@ -66,7 +63,13 @@ const constructorSlice = createSlice({
         return newState;
       },
       prepare: (ingredient) => {
-        return { payload: ingredient };
+        // Генерируем уникальный ID при создании экшена
+        return {
+          payload: {
+            ...ingredient,
+            uniqueId: uuidv4(), // Теперь это чистая функция
+          },
+        };
       },
     },
 

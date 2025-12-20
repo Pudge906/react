@@ -1,10 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { checkResponse } from '../utils/api-utils';
+import { BASE_URL } from '../utils/conts'; // Импортируем BASE_URL
+
 export const createOrder = createAsyncThunk(
   'order/create',
   async (ingredientIds, { rejectWithValue }) => {
     try {
-      const response = await fetch('https://norma.education-services.ru/api/orders', {
+      const response = await fetch(`${BASE_URL}/orders`, {
+        // Используем BASE_URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -12,11 +16,7 @@ export const createOrder = createAsyncThunk(
         body: JSON.stringify({ ingredients: ingredientIds }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Ошибка: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await checkResponse(response);
 
       if (!data.success) {
         throw new Error('Ошибка API');
@@ -63,13 +63,11 @@ const orderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-
       .addCase(createOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.success = false;
       })
-
       .addCase(createOrder.fulfilled, (state, action) => {
         state.loading = false;
         state.currentOrder = action.payload;
@@ -77,7 +75,6 @@ const orderSlice = createSlice({
         state.success = true;
         state.isModalOpen = true;
       })
-
       .addCase(createOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

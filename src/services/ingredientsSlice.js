@@ -1,18 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { checkResponse } from '../utils/api-utils'; // Используем правильное имя файла
+import { BASE_URL } from '../utils/conts'; // Импортируем базовый URL
+
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        'https://norma.education-services.ru/api/ingredients'
+        `${BASE_URL}/ingredients` // Используем BASE_URL
       );
 
-      if (!response.ok) {
-        throw new Error(`Ошибка: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await checkResponse(response);
 
       if (!data.success) {
         throw new Error('Ошибка API');
