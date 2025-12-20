@@ -1,43 +1,146 @@
-.burger_constructor {
+/* .burger_constructor {
   display: flex;
   flex-direction: column;
-  gap: 5%;
   width: 600px;
 }
 
-.price {
+.price_button {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 5%;
-  margin-top: -40px;
 }
 
-.icon {
-  width: 25px;
-  height: 25px;
+.largeIcon {
+  width: 30px;
+  height: 30px;
 }
 
-.section {
+.slice {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  width: 650px;
+  gap: 15px;
 }
 
-.bun {
+.bunRow {
   display: flex;
   align-items: center;
+  gap: 28px;
   cursor: auto;
 }
 
-.hol {
+.placeholder {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
 }
 
-.scroll {
-  scrollbar-color: #8585ad #2f2f37;
+.scrollableArea {
+  overflow-y: visible;
+}
+
+.bunSection {
+  margin-bottom: 16px;
+}
+
+.emptyBunPlaceholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 488px;
+  height: 90px;
+  padding: 16px 24px;
+  color: #8585ad;
+  font-size: 16px;
+  font-family: 'Jet Brains Mono', sans-serif;
+  line-height: 24px;
+  text-align: center;
+  background-color: #1c1c21;
+  border: 2px dashed #8585ad;
+  border-radius: 40px;
+  transition: all 0.3s ease;
+}
+
+.emptyBunPlaceholder:hover {
+  color: #f2f2f3;
+  border-color: #4c4cff;
+} */
+
+.burger_constructor {
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  padding-bottom: 20px;
+  color: var(--text-primary-color);
+}
+
+.price_button {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 5%;
+}
+
+.largeIcon {
+  width: 30px;
+  height: 30px;
+}
+
+.slice {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.bunRow {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  cursor: auto;
+}
+
+.placeholder {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.scrollableArea {
+  overflow-y: visible;
+}
+
+.bunSection {
+  margin-bottom: 16px;
+}
+
+.emptyBunPlaceholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 488px;
+  height: 90px;
+  padding: 36px 10px;
+  color: #8585ad;
+  font-size: 16px;
+  font-family: 'Jet Brains Mono', sans-serif;
+  line-height: 24px;
+  text-align: center;
+  background-color: #1c1c21;
+}
+
+/* Верхний плейсхолдер (для верхней булки) */
+
+.topBunPlaceholder {
+  border-radius: 80px 80px 30px 30px; /* Скругление сверху больше */
+}
+
+/* Нижний плейсхолдер (для нижней булки) */
+
+.bottomBunPlaceholder {
+  margin-top: 10px;
+  border-radius: 30px 30px 80px 80px; /* Скругление снизу больше */
 }
