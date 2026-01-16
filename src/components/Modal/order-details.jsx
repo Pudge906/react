@@ -5,8 +5,6 @@ import styles from './order-details.module.css';
 export default function OrderDetails() {
   const { orderNumber, loading, error } = useSelector((state) => state.order);
 
-  console.log('OrderDetails - номер заказа:', orderNumber);
-
   if (loading) {
     return (
       <div className={styles.container}>
@@ -34,7 +32,7 @@ export default function OrderDetails() {
         идентификатор заказа
       </div>
       <div className={styles.icon}>
-        <img src="/sucess.svg" alt="Заказ принят" width="120" height="120" />
+        <img src="/graphics.svg" alt="Заказ принят" width="120" height="120" />
       </div>
       <div className={`text text_type_main-default ${styles.status}`}>
         Ваш заказ начали готовить

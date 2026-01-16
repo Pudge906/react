@@ -5,7 +5,8 @@ import {
 import { useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
-import { moveIngredient, removeIngredient } from 'src/services/constructorSlice.js';
+
+import { moveIngredient, removeIngredient } from '@/services/constructor_slice.js';
 
 import styles from './burger-filling.module.css';
 

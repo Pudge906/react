@@ -1,28 +1,27 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { checkResponse } from '../utils/api-utils';
-import { BASE_URL } from '../utils/conts'; // Импортируем BASE_URL
+import { request } from '../utils/api.js';
+import { clearConstructor } from './constructor_slice.js';
 
 export const createOrder = createAsyncThunk(
   'order/create',
-  async (ingredientIds, { rejectWithValue }) => {
+  async (ingredientIds, { rejectWithValue, getState, dispatch }) => {
     try {
-      const response = await fetch(`${BASE_URL}/orders`, {
-        // Используем BASE_URL
+      const state = getState();
+      const token = state.auth.user?.accessToken;
+
+      const response = await request('/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : '',
         },
         body: JSON.stringify({ ingredients: ingredientIds }),
       });
 
-      const data = await checkResponse(response);
+      dispatch(clearConstructor());
 
-      if (!data.success) {
-        throw new Error('Ошибка API');
-      }
-
-      return data.order;
+      return response.order;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -38,7 +37,7 @@ const initialState = {
   isModalOpen: false,
 };
 
-const orderSlice = createSlice({
+const order_slice = createSlice({
   name: 'order',
   initialState,
   reducers: {
@@ -48,15 +47,12 @@ const orderSlice = createSlice({
       state.error = null;
       state.success = false;
     },
-
     openOrderModal: (state) => {
       state.isModalOpen = true;
     },
-
     closeOrderModal: (state) => {
       state.isModalOpen = false;
     },
-
     clearOrderError: (state) => {
       state.error = null;
     },
@@ -84,6 +80,6 @@ const orderSlice = createSlice({
 });
 
 export const { clearOrder, openOrderModal, closeOrderModal, clearOrderError } =
-  orderSlice.actions;
+  order_slice.actions;
 
-export default orderSlice.reducer;
+export default order_slice.reducer;

@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { v4 as uuidv4 } from 'uuid'; // Импортируем библиотеку для генерации UUID
 
 const initialState = {
   bun: null,
@@ -15,29 +14,20 @@ const calculateTotal = (state) => {
     (sum, item) => sum + (item.price || 0),
     0
   );
-  const total = bunPrice + ingredientsPrice;
-
-  return total;
+  return bunPrice + ingredientsPrice;
 };
 
-const constructorSlice = createSlice({
+const constructor_slice = createSlice({
   name: 'constructor',
   initialState,
   reducers: {
-    setBun: {
-      reducer: (state, action) => {
-        const newState = {
-          ...state,
-          bun: action.payload,
-        };
-
-        newState.total = calculateTotal(newState);
-
-        return newState;
-      },
-      prepare: (bun) => {
-        return { payload: bun };
-      },
+    setBun: (state, action) => {
+      const newState = {
+        ...state,
+        bun: action.payload,
+      };
+      newState.total = calculateTotal(newState);
+      return newState;
     },
 
     addIngredient: {
@@ -51,23 +41,31 @@ const constructorSlice = createSlice({
           ? state.ingredients
           : [];
 
+        const newIngredient = action.payload;
+
+        if (!newIngredient.uniqueId) {
+          return state;
+        }
+
         const newState = {
           ...state,
-          ingredients: [...currentIngredients, action.payload],
+          ingredients: [...currentIngredients, newIngredient],
           count: state.count + 1,
           _lastAdd: now,
         };
 
         newState.total = calculateTotal(newState);
-
         return newState;
       },
       prepare: (ingredient) => {
-        // Генерируем уникальный ID при создании экшена
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(2, 9);
+        const uniqueId = `${ingredient._id}-${timestamp}-${random}`;
+
         return {
           payload: {
             ...ingredient,
-            uniqueId: uuidv4(), // Теперь это чистая функция
+            uniqueId,
           },
         };
       },
@@ -93,9 +91,6 @@ const constructorSlice = createSlice({
       };
 
       newState.total = calculateTotal(newState);
-
-      console.log('New total after removeIngredient:', newState.total);
-
       return newState;
     },
 
@@ -126,9 +121,7 @@ const constructorSlice = createSlice({
       };
     },
 
-    clearConstructor: () => {
-      return initialState;
-    },
+    clearConstructor: () => initialState,
   },
 });
 
@@ -138,6 +131,6 @@ export const {
   removeIngredient,
   moveIngredient,
   clearConstructor,
-} = constructorSlice.actions;
+} = constructor_slice.actions;
 
-export default constructorSlice.reducer;
+export default constructor_slice.reducer;

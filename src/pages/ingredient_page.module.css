@@ -1,0 +1,15 @@
+.center {
+  padding: 2rem;
+  color: white;
+  text-align: center;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}

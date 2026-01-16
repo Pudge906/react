@@ -4,9 +4,10 @@ import {
   CurrencyIcon,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { createOrder } from 'src/services/orderSlice.js';
+import { useNavigate } from 'react-router-dom';
 
 import { BurgerFilling } from '@components/burger-constructor/burger-filling/burger-filling.jsx';
+import { createOrder } from '@services/order_slice.js';
 
 import DropTargetConstructor from './DropTargetConstructor';
 
@@ -14,15 +15,17 @@ import styles from './burger-constructor.module.css';
 
 export const BurgerConstructor = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const constructorState = useSelector((state) => state.constructor || {});
   const orderState = useSelector((state) => state.order || {});
+  const authState = useSelector((state) => state.auth || {});
 
   const bun = constructorState?.bun || null;
   const ingredients = constructorState?.ingredients || [];
   const total = constructorState?.total || 0;
 
   const { loading: orderLoading, error: orderError } = orderState;
+  const { isAuth } = authState;
   const canPlaceOrder = bun && ingredients.length > 0;
 
   const handleCreateOrder = () => {
@@ -32,6 +35,10 @@ export const BurgerConstructor = () => {
     }
     if (ingredients.length === 0) {
       alert('Добавьте начинки!');
+      return;
+    }
+    if (!isAuth) {
+      navigate('/login');
       return;
     }
 

@@ -1,7 +1,8 @@
-import { useRef } from 'react'; // Добавь useRef
+import { useRef } from 'react';
 import { useDrop } from 'react-dnd';
 import { useDispatch } from 'react-redux';
-import { addIngredient, setBun } from 'src/services/constructorSlice.js';
+
+import { addIngredient, setBun } from '@services/constructor_slice.js';
 
 const DropTargetConstructor = ({ children }) => {
   const dispatch = useDispatch();
@@ -45,13 +46,6 @@ const DropTargetConstructor = ({ children }) => {
   const backgroundColor = isOver ? '#1C1C21' : 'transparent';
   const border = isOver ? '2px dashed #4C4CFF' : 'none';
   const padding = canDrop ? '2px' : '0';
-
-  console.log('DropTargetConstructor render:', {
-    isOver,
-    canDrop,
-    backgroundColor,
-    border,
-  });
 
   return (
     <div

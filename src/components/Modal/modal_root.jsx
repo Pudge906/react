@@ -1,27 +1,84 @@
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import {
+  closeIngredientModal,
+  openIngredientModal,
+} from '@services/ingredient_detailsSlice';
+import { closeOrderModal } from '@services/order_slice';
 
 import IngredientDetails from './ingredient-details';
-import Modal from './Modal';
+import Modal from './modal.jsx';
 import OrderDetails from './order-details';
 
 export default function ModalRoot() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const { currentIngredient, isModalOpen: isIngredientModalOpen } = useSelector(
     (state) => state.ingredientDetails
   );
-
   const { isModalOpen: isOrderModalOpen } = useSelector((state) => state.order);
 
-  if (isIngredientModalOpen && currentIngredient) {
+  console.log(
+    'ModalRoot rendered:',
+    JSON.stringify(
+      {
+        isOrderModalOpen,
+        isIngredientModalOpen,
+        pathname: location.pathname,
+        background: location.state?.background,
+      },
+      null,
+      2
+    )
+  );
+
+  useEffect(() => {
+    if (!isIngredientModalOpen) {
+      const storedData = sessionStorage.getItem('ingredientModalData');
+      if (storedData) {
+        const ingredient = JSON.parse(storedData);
+        dispatch(openIngredientModal(ingredient));
+      }
+    }
+  }, [dispatch, isIngredientModalOpen]);
+
+  const handleIngredientClose = () => {
+    sessionStorage.removeItem('ingredientModalData');
+    if (location.state?.background) {
+      navigate(location.state.background, { replace: true });
+    } else {
+      navigate('/', { replace: true });
+    }
+    dispatch(closeIngredientModal());
+  };
+
+  const handleOrderClose = () => {
+    dispatch(closeOrderModal());
+  };
+
+  const isModalView = location.state?.background;
+
+  if (
+    isModalView &&
+    isIngredientModalOpen &&
+    currentIngredient &&
+    location.pathname.startsWith('/ingredients/')
+  ) {
     return (
-      <Modal type="ingredient">
+      <Modal onClose={handleIngredientClose}>
         <IngredientDetails />
       </Modal>
     );
   }
 
   if (isOrderModalOpen) {
+    console.log('Order modal should render now.');
     return (
-      <Modal type="order">
+      <Modal onClose={handleOrderClose}>
         <OrderDetails />
       </Modal>
     );

@@ -1,22 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { checkResponse } from '../utils/api-utils'; // Используем правильное имя файла
-import { BASE_URL } from '../utils/conts'; // Импортируем базовый URL
+import { request } from '../utils/api';
 
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/ingredients` // Используем BASE_URL
-      );
-
-      const data = await checkResponse(response);
-
-      if (!data.success) {
-        throw new Error('Ошибка API');
-      }
-
+      const data = await request('/ingredients');
       return data.data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -34,21 +24,20 @@ const initialState = {
   success: false,
 };
 
-const ingredientsSlice = createSlice({
+const ingredients_slice = createSlice({
   name: 'ingredients',
   initialState,
   reducers: {
     setIngredients: (state, action) => {
       const items = action.payload;
       state.items = items;
-      state.bun = items.filter((item) => item.type === 'bun');
-      state.sauce = items.filter((item) => item.type === 'sauce');
-      state.main = items.filter((item) => item.type === 'main');
+      state.bun = items.filter((i) => i.type === 'bun');
+      state.sauce = items.filter((i) => i.type === 'sauce');
+      state.main = items.filter((i) => i.type === 'main');
       state.loading = false;
       state.error = null;
       state.success = true;
     },
-
     clearIngredientsError: (state) => {
       state.error = null;
     },
@@ -63,12 +52,12 @@ const ingredientsSlice = createSlice({
       })
       .addCase(fetchIngredients.fulfilled, (state, action) => {
         const items = action.payload;
-
         state.items = items;
-        state.bun = items.filter((item) => item.type === 'bun');
-        state.sauce = items.filter((item) => item.type === 'sauce');
-        state.main = items.filter((item) => item.type === 'main');
+        state.bun = items.filter((i) => i.type === 'bun');
+        state.sauce = items.filter((i) => i.type === 'sauce');
+        state.main = items.filter((i) => i.type === 'main');
         state.loading = false;
+        state.error = null;
         state.success = true;
       })
       .addCase(fetchIngredients.rejected, (state, action) => {
@@ -80,6 +69,6 @@ const ingredientsSlice = createSlice({
 });
 
 export const { setIngredients, clearIngredientsError, resetIngredients } =
-  ingredientsSlice.actions;
+  ingredients_slice.actions;
 
-export default ingredientsSlice.reducer;
+export default ingredients_slice.reducer;

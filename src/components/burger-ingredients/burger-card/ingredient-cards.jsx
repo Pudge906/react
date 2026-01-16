@@ -1,7 +1,9 @@
 import { CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { openIngredientModal } from '../../../services/ingredientDetailsSlice';
+import { openIngredientModal } from '@services/ingredient_detailsSlice.js';
+
 import DraggableIngredient from '../DraggableIngredient';
 
 import style from './ingredient-cards.module.css';
@@ -18,6 +20,8 @@ export function IngredientCards(props) {
   } = props;
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const constructorState = useSelector((state) => state.constructor);
 
@@ -38,12 +42,14 @@ export function IngredientCards(props) {
 
   const handleIngredientClick = (ingredient) => {
     dispatch(openIngredientModal(ingredient));
+
+    sessionStorage.setItem('ingredientModalData', JSON.stringify(ingredient));
+    navigate(`/ingredients/${ingredient._id}`, { state: { background: location } });
   };
 
   const safeBunItems = Array.isArray(bunItems) ? bunItems : [];
   const safeSauceItems = Array.isArray(sauceItems) ? sauceItems : [];
   const safeMainItems = Array.isArray(mainItems) ? mainItems : [];
-
   return (
     <div>
       <ul ref={scrollContainerRef} className={`${style.main} custom-scroll`}>

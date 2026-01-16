@@ -1,9 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import constructorReducer from './constructorSlice';
-import ingredientDetailsReducer from './ingredientDetailsSlice';
-import ingredientsReducer from './ingredientsSlice';
-import orderReducer from './orderSlice';
+import authReducer from './auth_slice.js';
+import constructorReducer from './constructor_slice.js';
+import ingredientDetailsReducer from './ingredient_detailsSlice.js';
+import ingredientsReducer from './ingredients_slice.js';
+import orderReducer from './order_slice.js';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     constructor: constructorReducer,
     ingredientDetails: ingredientDetailsReducer,
     order: orderReducer,
+    auth: authReducer,
   },
 
   middleware: (getDefaultMiddleware) =>
