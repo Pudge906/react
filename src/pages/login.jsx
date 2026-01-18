@@ -27,18 +27,20 @@ export default function Login() {
     }
   }, [isAuth, navigate]);
 
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from || '/';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
       await dispatch(loginUser({ email, password })).unwrap();
+
       navigate(from, { replace: true });
     } catch (err) {
       setError(err.message || 'Неверный email или пароль');
     }
   };
+
   return (
     <div className={styles.container}>
       <div>
@@ -78,7 +80,6 @@ export default function Login() {
               Зарегистрироваться
             </Link>
           </p>
-
           <p className="text text_type_main-default">
             Забыли пароль?{' '}
             <Link to="/forgot-password" className="text text_type_main-default">
