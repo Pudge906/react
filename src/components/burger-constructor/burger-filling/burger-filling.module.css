@@ -98,10 +98,13 @@
   overflow-y: hidden; /* Скрываем скролл когда пусто */
 }
 
-.main.withIngredients {
-  height: auto;
-  max-height: 180px; /* Лимит после которого появляется скролл */
-}
+/* .main.withIngredients { */
+
+/* height: auto; */
+
+/* max-height: 180px; Лимит после которого появляется скролл */
+
+/* } */
 
 .ingredientItem:hover {
   transform: translateY(-1px);
