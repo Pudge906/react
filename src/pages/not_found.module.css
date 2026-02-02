@@ -1,0 +1,48 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background: #000;
+}
+
+.content {
+  max-width: 500px;
+  color: white;
+  text-align: center;
+}
+
+.code {
+  margin: 0 0 1rem;
+  color: transparent;
+  font-weight: bold;
+  font-size: 3.5rem;
+  background: linear-gradient(90deg, #8a2be2, #6a1b9a);
+  background-clip: text;
+}
+
+.message {
+  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+}
+
+.hint {
+  margin-bottom: 1.5rem;
+  color: #aaa;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+  background: #8a2be2;
+  border-radius: 24px;
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background: #7a1ed2;
+}
