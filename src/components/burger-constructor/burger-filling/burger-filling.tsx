@@ -6,70 +6,80 @@ import { useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { moveIngredient, removeIngredient } from '@services/constructor_slice';
+import { moveIngredient, removeIngredient } from '@services/constructor_slice.ts';
 
 import type { RootState } from '@services/store';
+import type { Identifier } from 'dnd-core';
 
 import styles from './burger-filling.module.css';
 
-type Ingredient = {
+// ==================== ТИПЫ ====================
+interface Ingredient {
   uniqueId: string;
   name: string;
   price: number;
   image: string;
-};
+}
 
-type DraggableItem = {
+interface DraggableItem {
   index: number;
   id: string;
-};
+}
 
-// Убрали пустой объектный тип
-// type DropResult = {};
+// Тип для результата drop операции (не используется, но нужен для типизации)
+type DropResult = Record<string, never>; // Пустой объект, но не any
 
+interface DragCollectedProps {
+  isDragging: boolean;
+}
+
+interface DropCollectedProps {
+  handlerId: Identifier | null;
+  isOver: boolean;
+  canDrop: boolean;
+}
+
+// ==================== КОМПОНЕНТ ДЛЯ ПЕРЕТАСКИВАЕМОГО ЭЛЕМЕНТА ====================
 const DraggableConstructorElement: React.FC<{
   ingredient: Ingredient;
   index: number;
-}> = ({ ingredient, index }) => {
+}> = ({ ingredient, index }): React.ReactElement => {
   const dispatch = useDispatch();
   const ref = useRef<HTMLLIElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
+  // Настройка drag
   const [{ isDragging }, drag] = useDrag<
     DraggableItem,
-    unknown, // Заменили DropResult на unknown
-    { isDragging: boolean }
+    DropResult,
+    DragCollectedProps
   >({
     type: 'constructor-ingredient',
     item: (): DraggableItem => {
-      // Добавили тип возвращаемого значения
       return { index, id: ingredient.uniqueId };
     },
-    collect: (monitor) => ({
+    collect: (monitor): DragCollectedProps => ({
       isDragging: monitor.isDragging(),
     }),
-    end: (item, monitor): void => {
-      // Добавили тип возвращаемого значения
-      const didDrop = monitor.didDrop();
-      if (!didDrop) {
-        /* Пустой блок с комментарием */
-      }
+    // Пустой end метод (не используется)
+    end: (): void => {
+      // Ничего не делаем
     },
   });
 
+  // Настройка drop
   const [{ handlerId, isOver }, drop] = useDrop<
     DraggableItem,
-    unknown, // Заменили DropResult на unknown
-    { handlerId: string | symbol | null; isOver: boolean; canDrop: boolean }
+    DropResult,
+    DropCollectedProps
   >({
     accept: 'constructor-ingredient',
-    collect: (monitor) => ({
+    collect: (monitor): DropCollectedProps => ({
       handlerId: monitor.getHandlerId(),
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
     }),
-    hover: (draggedItem, monitor): void => {
-      // Добавили тип возвращаемого значения
+    hover: (draggedItem: DraggableItem, monitor): void => {
       if (!ref.current) {
         return;
       }
@@ -77,28 +87,33 @@ const DraggableConstructorElement: React.FC<{
       const dragIndex = draggedItem.index;
       const hoverIndex = index;
 
+      // Не перетаскиваем элемент на свое место
       if (dragIndex === hoverIndex) {
         return;
       }
 
+      // Определяем позицию для вставки
       const hoverBoundingRect = ref.current.getBoundingClientRect();
       const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
+      
       if (!clientOffset) return;
 
       const hoverClientY = clientOffset.y - hoverBoundingRect.top;
 
+      // Перетаскивание вниз
       const isDraggingDown = dragIndex < hoverIndex;
-      const isDraggingUp = !isDraggingDown;
-
       if (isDraggingDown && hoverClientY < hoverMiddleY) {
         return;
       }
 
+      // Перетаскивание вверх
+      const isDraggingUp = dragIndex > hoverIndex;
       if (isDraggingUp && hoverClientY > hoverMiddleY) {
         return;
       }
 
+      // Перемещаем элемент
       dispatch(
         moveIngredient({
           fromIndex: dragIndex,
@@ -106,24 +121,29 @@ const DraggableConstructorElement: React.FC<{
         })
       );
 
+      // Обновляем индекс перетаскиваемого элемента
       draggedItem.index = hoverIndex;
     },
-    drop: (): void => {
-      // Добавили тип возвращаемого значения
+    drop: (): DropResult => {
       setIsHovered(false);
+      return {}; // Возвращаем пустой объект как результат
     },
   });
 
+  // Объединяем drag и drop рефы
   drag(drop(ref));
 
+  /**
+   * Удаление ингредиента
+   */
   const handleRemove = (): void => {
-    // Добавили тип возвращаемого значения
     dispatch(removeIngredient(ingredient.uniqueId));
   };
 
-  const opacity = isDragging ? 0.5 : 1;
-  const backgroundColor = isOver ? '#2F2F37' : 'transparent';
-  const transform = isDragging ? 'rotate(5deg)' : 'none';
+  // Стили для перетаскиваемого элемента
+  const opacity: number = isDragging ? 0.5 : 1;
+  const backgroundColor: string = isOver ? '#2F2F37' : 'transparent';
+  const transform: string = isDragging ? 'rotate(5deg)' : 'none';
 
   return (
     <li
@@ -136,8 +156,8 @@ const DraggableConstructorElement: React.FC<{
         transition: 'all 0.2s ease',
       }}
       data-handler-id={handlerId}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={(): void => setIsHovered(true)}
+      onMouseLeave={(): void => setIsHovered(false)}
     >
       <div className={styles.dragWrapper}>
         <DragIcon type="primary" />
@@ -153,6 +173,7 @@ const DraggableConstructorElement: React.FC<{
   );
 };
 
+// ==================== ОСНОВНОЙ КОМПОНЕНТ ====================
 export function BurgerFilling(): React.ReactElement {
   const ingredients =
     useSelector((state: RootState) => state.constructor?.ingredients) || [];
@@ -165,7 +186,7 @@ export function BurgerFilling(): React.ReactElement {
         {ingredients.length === 0 ? (
           <li className={styles.emptyPlaceholder}>Перетащите сюда начинки и соусы</li>
         ) : (
-          ingredients.map((ingredient, index) => (
+          ingredients.map((ingredient: Ingredient, index: number): React.ReactElement => (
             <DraggableConstructorElement
               key={ingredient.uniqueId}
               ingredient={ingredient}

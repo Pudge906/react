@@ -1,0 +1,149 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+  background: #1A1A23;
+  border-radius: 20px;
+}
+
+.orderId {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 0;
+  color: #C4C4C4;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.orderNumber {
+  color: #FFF;
+  font-weight: 500;
+}
+
+.time {
+  color: #9E9E9E;
+  font-size: 12px;
+  text-align: right;
+}
+
+.statusBadge {
+  margin-top: 4px;
+  padding: 2px 8px;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.statusBadge[data-status="done"] {
+  color: #0F6;
+  background: rgb(0 255 102 / 10%);
+}
+
+.statusBadge[data-status="pending"] {
+  color: #FC0;
+  background: rgb(255 204 0 / 10%);
+}
+
+.statusBadge[data-status="cancelled"] {
+  color: #F36;
+  background: rgb(255 51 102 / 10%);
+}
+
+.orderName {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: #FFF;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.ingredientsRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+}
+
+.ingredientImage {
+  z-index: 1;
+  width: 46px;
+  height: 46px;
+  margin-left: -18px;
+  overflow: hidden;
+  background: #1A1A23;
+  border: 2px solid #63F;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgb(102 51 255 / 50%);
+}
+
+.ingredientImage:first-child {
+  z-index: 5;
+  margin-left: 0;
+}
+
+.ingredientImage:nth-child(2) {
+  z-index: 4;
+}
+
+.ingredientImage:nth-child(3) {
+  z-index: 3;
+}
+
+.ingredientImage:nth-child(4) {
+  z-index: 2;
+}
+
+.ingredientImage:nth-child(5) {
+  z-index: 1;
+}
+
+.ingredientImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remainingBadge {
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 46px;
+  height: 46px;
+  margin-left: -18px;
+  color: #FFF;
+  font-weight: 600;
+  font-size: 14px;
+  background: #1A1A23;
+  border: 2px solid #63F;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgb(102 51 255 / 50%);
+}
+
+.remainingBadge:first-child {
+  z-index: 5;
+  margin-left: 0;
+}
+
+.price {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+}
+
+.priceValue {
+  color: #FFF;
+  font-weight: 500;
+  font-size: 16px;
+}

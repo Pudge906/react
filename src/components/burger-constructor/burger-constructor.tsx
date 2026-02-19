@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { BurgerFilling } from '@components/burger-constructor/burger-filling/burger-filling';
-import { createOrder } from '@services/order_slice';
+import { createOrder } from '@services/order_slice.ts';
 
 import DropTargetConstructor from './DropTargetConstructor.tsx';
 
@@ -62,8 +62,7 @@ export const BurgerConstructor: React.FC = () => {
   const { isAuth } = authState;
   const canPlaceOrder = !!bun && ingredients.length > 0;
 
-  // Добавлен тип возвращаемого значения
-  const handleCreateOrder = (): void => {
+  const handleCreateOrder = () => {
     if (!bun) {
       alert('Добавьте булку!');
       return;
@@ -97,11 +96,7 @@ export const BurgerConstructor: React.FC = () => {
                   thumbnail={bun.image}
                 />
               ) : (
-                <div
-                  className={`${styles.emptyBunPlaceholder} ${styles.topBunPlaceholder}`}
-                >
-                  Выберите бургер
-                </div>
+                <div className={styles.emptyBunPlaceholder}>Перетащите булку сюда</div>
               )}
             </div>
           </div>
@@ -122,11 +117,7 @@ export const BurgerConstructor: React.FC = () => {
                   thumbnail={bun.image}
                 />
               ) : (
-                <div
-                  className={`${styles.emptyBunPlaceholder} ${styles.bottomBunPlaceholder}`}
-                >
-                  Выберите бургер
-                </div>
+                <div className={styles.emptyBunPlaceholder}>Перетащите булку сюда</div>
               )}
             </div>
           </div>

@@ -1,9 +1,10 @@
+// src/pages/ingredient_page.ts
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 
 import IngredientDetails from '@components/Modal/ingredient-details.tsx';
-import { setCurrentIngredient } from '@services/ingredient_detailsSlice.js';
+import { setCurrentIngredient } from '@services/ingredient_detailsSlice.ts';
 
 import type { RootState } from '@services/store';
 

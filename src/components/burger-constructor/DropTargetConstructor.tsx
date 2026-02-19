@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { useDrop } from 'react-dnd';
 import { useDispatch } from 'react-redux';
 
-import { addIngredient, setBun } from '@services/constructor_slice';
+import { addIngredient, setBun } from '@services/constructor_slice.ts';
 
 type DropItem = {
   _id: string;

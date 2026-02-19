@@ -8,48 +8,86 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { registerUser } from '@services/auth_slice';
+import { registerUser } from '@services/auth_slice.ts';
+
+import type { UnknownAction } from '@reduxjs/toolkit';
 
 import styles from './register.module.css';
 
-type FormData = {
+// ==================== ТИПЫ ====================
+interface FormData {
   name: string;
   email: string;
   password: string;
-};
+}
 
+interface RegisterError {
+  message: string;
+}
+
+// ==================== КОМПОНЕНТ ====================
 export default function Register(): React.ReactElement {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     password: '',
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Добавлен тип возвращаемого значения
+  /**
+   * Обработчик отправки формы регистрации
+   */
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setError('');
+
+    // Валидация
+    if (!formData.name.trim()) {
+      setError('Введите имя');
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      setError('Введите email');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Пароль должен содержать не менее 6 символов');
+      return;
+    }
+
     try {
-      await dispatch(registerUser(formData)).unwrap();
+      await dispatch(registerUser(formData) as unknown as UnknownAction).unwrap();
       navigate('/');
     } catch (err: unknown) {
-      // Заменен any на unknown
+      // Безопасная обработка ошибки
       if (err instanceof Error) {
         setError(err.message || 'Ошибка регистрации');
+      } else if (typeof err === 'string') {
+        setError(err);
+      } else if (err && typeof err === 'object' && 'message' in err && typeof (err as RegisterError).message === 'string') {
+        setError((err as RegisterError).message);
       } else {
         setError('Ошибка регистрации');
       }
     }
   };
 
-  // Добавлен тип возвращаемого значения
+  /**
+   * Обработчик изменения полей формы
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev: FormData): FormData => ({ ...prev, [name]: value }));
+    
+    // Очищаем ошибку при изменении поля
+    if (error) {
+      setError('');
+    }
   };
 
   return (
@@ -57,9 +95,14 @@ export default function Register(): React.ReactElement {
       <div className={styles.formContainer}>
         <h2 className={`text text_type_main-large ${styles.title}`}>Регистрация</h2>
 
-        {error && <div className="text text_type_main-default">{error}</div>}
+        {/* Отображение ошибки */}
+        {error && (
+          <div className={`text text_type_main-default ${styles.errorMessage}`}>
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.inputGroup}>
             <Input
               type="text"
@@ -68,7 +111,10 @@ export default function Register(): React.ReactElement {
               value={formData.name}
               onChange={handleChange}
               icon="EditIcon"
+              error={!!error && !formData.name.trim()}
+              errorText="Поле обязательно для заполнения"
             />
+            
             <EmailInput
               placeholder="E-mail"
               name="email"
@@ -76,6 +122,7 @@ export default function Register(): React.ReactElement {
               onChange={handleChange}
               isIcon={false}
             />
+            
             <PasswordInput
               placeholder="Пароль"
               name="password"
@@ -89,7 +136,6 @@ export default function Register(): React.ReactElement {
               htmlType="submit"
               size="medium"
               type="primary"
-              className={styles.loginButton}
             >
               Зарегистрироваться
             </Button>

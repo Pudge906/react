@@ -1,9 +1,23 @@
+/* src/pages/login.module.css */
+
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 70vh;
   padding: 2rem 1rem;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  background: #1c1c21;
+  border-radius: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .title {
@@ -16,28 +30,70 @@
   text-align: center;
 }
 
+.errorMessage {
+  margin-bottom: 16px;
+  color: #ff5252;
+  font-size: 14px;
+  text-align: center;
+  padding: 8px;
+  background: rgba(255, 82, 82, 0.1);
+  border-radius: 8px;
+  width: 100%;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+/* Стили для полей ввода - используем селекторы атрибутов */
+.inputGroup [class*="input__container"] {
+  width: 100%;
+}
+
+.inputGroup [class*="input"] {
+  width: 100%;
+}
+
+.form {
+  width: 100%;
+}
+
 .buttonContainer {
   display: flex;
   justify-content: center;
   margin-top: 24px;
+  width: 100%;
 }
 
 .links {
   margin-top: 80px;
-  color: #aaa;
+  color: #8585AD;
   font-size: 16px;
   line-height: 1.5;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.links p {
+  margin: 0;
+  color: #8585AD;
 }
 
 .links a {
-  margin-left: 0.25rem;
-  color: #4d4dff;
+  color: #4C4CFF;
   font-weight: 500;
-  text-decoration: underline;
-  transition: color 0.2s ease;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  margin-left: 8px;
 }
 
 .links a:hover {
-  color: #c684ff;
+  opacity: 0.8;
+  text-decoration: underline;
 }

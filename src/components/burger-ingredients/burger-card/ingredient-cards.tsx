@@ -2,7 +2,7 @@ import { CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { openIngredientModal } from '@services/ingredient_detailsSlice';
+import { openIngredientModal } from '@services/ingredient_detailsSlice.ts';
 
 import DraggableIngredient from '../DraggableIngredient.tsx';
 
@@ -67,8 +67,7 @@ export function IngredientCards(props: IngredientCardsProps): React.ReactElement
     return ingredients.filter((item) => item?._id === ingredient._id).length;
   };
 
-  // Добавлен тип возвращаемого значения
-  const handleIngredientClick = (ingredient: Ingredient): void => {
+  const handleIngredientClick = (ingredient: Ingredient) => {
     dispatch(openIngredientModal(ingredient));
 
     sessionStorage.setItem('ingredientModalData', JSON.stringify(ingredient));

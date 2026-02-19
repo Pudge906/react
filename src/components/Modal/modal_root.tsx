@@ -5,8 +5,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   closeIngredientModal,
   openIngredientModal,
-} from '@services/ingredient_detailsSlice';
-import { closeOrderModal } from '@services/order_slice';
+} from '@services/ingredient_detailsSlice.ts';
+import { closeOrderModal } from '@services/order_slice.ts';
 
 import IngredientDetails from './ingredient-details';
 import Modal from './modal';

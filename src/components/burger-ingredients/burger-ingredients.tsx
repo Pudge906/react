@@ -6,24 +6,37 @@ import { IngredientCards } from '@components/burger-ingredients/burger-card/ingr
 
 import styles from './burger-ingredients.module.css';
 
-type Ingredient = {
+// ==================== ТИПЫ ====================
+interface Ingredient {
   _id: string;
   name: string;
   price: number;
   image: string;
   type: 'bun' | 'sauce' | 'main';
-};
+}
 
-type IngredientsState = {
+interface IngredientsState {
   items: Ingredient[];
   bun: Ingredient[];
   sauce: Ingredient[];
   main: Ingredient[];
   loading: boolean;
   error: string | null;
-};
+}
 
-export const BurgerIngredients: React.FC = () => {
+interface RootState {
+  ingredients: IngredientsState;
+}
+
+type TabType = 'bun' | 'sauce' | 'main';
+
+interface Section {
+  id: TabType;
+  ref: React.RefObject<HTMLDivElement>;
+}
+
+// ==================== КОМПОНЕНТ ====================
+export const BurgerIngredients: React.FC = (): React.ReactElement => {
   const {
     items: allIngredients,
     bun,
@@ -31,38 +44,34 @@ export const BurgerIngredients: React.FC = () => {
     main,
     loading,
     error,
-  } = useSelector((state: { ingredients: IngredientsState }) => state.ingredients);
+  } = useSelector((state: RootState): IngredientsState => state.ingredients);
 
   const bunRef = useRef<HTMLDivElement>(null);
   const sauceRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLUListElement>(null);
 
-  const [activeTab, setActiveTab] = useState<'bun' | 'sauce' | 'main'>('bun');
+  const [activeTab, setActiveTab] = useState<TabType>('bun');
 
+  // Обновление активного таба при скролле
   useEffect((): (() => void) => {
     const container = scrollContainerRef.current;
-    if (!container) {
-      // Вместо пустой функции возвращаем undefined или функцию без тела
-      return () => {
-        /* cleanup не требуется, т.к. container не существует */
-      };
-    }
+    if (!container) return (): void => {};
 
     const handleScroll = (): void => {
       const containerRect = container.getBoundingClientRect();
       const containerTop = containerRect.top;
 
-      const sections = [
-        { id: 'bun' as const, ref: bunRef },
-        { id: 'sauce' as const, ref: sauceRef },
-        { id: 'main' as const, ref: mainRef },
+      const sections: Section[] = [
+        { id: 'bun', ref: bunRef },
+        { id: 'sauce', ref: sauceRef },
+        { id: 'main', ref: mainRef },
       ];
 
-      let closestSection: 'bun' | 'sauce' | 'main' | null = null;
+      let closestSection: TabType | null = null;
       let minDistance = Infinity;
 
-      sections.forEach((section): void => {
+      sections.forEach((section: Section): void => {
         if (section.ref.current) {
           const sectionElement = section.ref.current;
           const sectionRect = sectionElement.getBoundingClientRect();
@@ -70,7 +79,8 @@ export const BurgerIngredients: React.FC = () => {
           const distance = Math.abs(sectionRect.top - containerTop);
 
           const isVisible =
-            sectionRect.bottom > containerTop && sectionRect.top < containerRect.bottom;
+            sectionRect.bottom > containerTop && 
+            sectionRect.top < containerRect.bottom;
 
           if (isVisible && distance < minDistance) {
             minDistance = distance;
@@ -86,18 +96,24 @@ export const BurgerIngredients: React.FC = () => {
 
     container.addEventListener('scroll', handleScroll);
 
+    // Первоначальный вызов для установки активного таба
     handleScroll();
 
+    // Очистка обработчика
     return (): void => {
       container.removeEventListener('scroll', handleScroll);
     };
   }, [activeTab]);
 
+  /**
+   * Прокрутка к выбранной секции
+   */
   const scrollToSection = (
     sectionRef: React.RefObject<HTMLDivElement>,
-    tabValue: 'bun' | 'sauce' | 'main'
+    tabValue: TabType
   ): void => {
     setActiveTab(tabValue);
+    
     if (sectionRef.current && scrollContainerRef.current) {
       const sectionTop = sectionRef.current.offsetTop;
       const containerTop = scrollContainerRef.current.offsetTop;
@@ -109,22 +125,12 @@ export const BurgerIngredients: React.FC = () => {
     }
   };
 
-  const handleBunClick = (): void => {
-    scrollToSection(bunRef, 'bun');
-  };
-
-  const handleSauceClick = (): void => {
-    scrollToSection(sauceRef, 'sauce');
-  };
-
-  const handleMainClick = (): void => {
-    scrollToSection(mainRef, 'main');
-  };
-
+  // Состояние загрузки
   if (loading) {
     return <Preloader />;
   }
 
+  // Состояние ошибки
   if (error) {
     return (
       <div className="text text_type_main-medium p-10 text_color_error">
@@ -133,27 +139,46 @@ export const BurgerIngredients: React.FC = () => {
     );
   }
 
+  // Нет данных
   if (!allIngredients || allIngredients.length === 0) {
-    return <div className="text text_type_main-medium p-10">Ингредиенты не найдены</div>;
+    return (
+      <div className="text text_type_main-medium p-10">
+        Ингредиенты не найдены
+      </div>
+    );
   }
 
+  // Основной рендер
   return (
     <div className={`pl-1 pr-1 pb-1 pt-1 ${styles.verticalBlock}`}>
       <section className={styles.burger_ingredients}>
         <nav>
           <ul className={styles.menu}>
-            <Tab value="bun" active={activeTab === 'bun'} onClick={handleBunClick}>
+            <Tab
+              value="bun"
+              active={activeTab === 'bun'}
+              onClick={(): void => scrollToSection(bunRef, 'bun')}
+            >
               Булки
             </Tab>
-            <Tab active={activeTab === 'sauce'} value="sauce" onClick={handleSauceClick}>
+            <Tab
+              value="sauce"
+              active={activeTab === 'sauce'}
+              onClick={(): void => scrollToSection(sauceRef, 'sauce')}
+            >
               Соусы
             </Tab>
-            <Tab active={activeTab === 'main'} value="main" onClick={handleMainClick}>
+            <Tab
+              value="main"
+              active={activeTab === 'main'}
+              onClick={(): void => scrollToSection(mainRef, 'main')}
+            >
               Начинки
             </Tab>
           </ul>
         </nav>
       </section>
+      
       <IngredientCards
         bunItems={bun}
         sauceItems={sauce}

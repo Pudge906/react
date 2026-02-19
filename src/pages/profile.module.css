@@ -1,10 +1,18 @@
 .container {
+  position: relative;
   display: flex;
   gap: 4rem;
   max-width: 1200px;
   margin: 0 auto;
   padding: 4rem 2rem 2rem;
   color: white;
+}
+
+/* Добавляем .nav — для левой панели */
+
+.nav {
+  flex-shrink: 0;
+  width: 250px;
 }
 
 .navItem {
