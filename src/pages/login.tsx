@@ -10,136 +10,80 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { loginUser } from '@services/auth_slice.ts';
 
 import type { RootState } from '@services/store';
-import type { UnknownAction } from '@reduxjs/toolkit';
 
 import styles from './login.module.css';
 
-// ==================== ТИПЫ ====================
-interface LocationState {
+type LocationState = {
   from?: string;
-}
+};
 
-interface FormData {
+type FormData = {
   email: string;
   password: string;
-}
+};
 
-interface LoginError {
-  message: string;
-}
-
-// ==================== КОМПОНЕНТ ====================
 export default function Login(): React.ReactElement {
-  const [formData, setFormData] = useState<FormData>({ 
-    email: '', 
-    password: '' 
-  });
-  const [error, setError] = useState<string>('');
+  const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
+  const [error, setError] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+  const location = useLocation<LocationState>();
 
-  const { isAuth } = useSelector<RootState, { isAuth: boolean }>(
-    (state): { isAuth: boolean } => state.auth
-  );
+  const { isAuth } = useSelector<RootState, { isAuth: boolean }>((state) => state.auth);
 
-  // Редирект если уже авторизован
-  useEffect((): void => {
+  useEffect(() => {
     if (isAuth) {
       navigate('/', { replace: true });
     }
   }, [isAuth, navigate]);
 
-  const locationState = location.state as LocationState | null;
-  const from = locationState?.from || '/';
+  const from = location.state?.from || '/';
 
-  /**
-   * Обработчик отправки формы входа
-   */
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    // Валидация
-    if (!formData.email.trim()) {
-      setError('Введите email');
-      return;
-    }
-
-    if (!formData.password.trim()) {
-      setError('Введите пароль');
-      return;
-    }
-
     try {
-      await dispatch(loginUser(formData) as unknown as UnknownAction).unwrap();
+      await dispatch(loginUser(formData)).unwrap();
+
       navigate(from, { replace: true });
-    } catch (err: unknown) {
-      // Безопасная обработка ошибки
-      if (err instanceof Error) {
-        setError(err.message || 'Неверный email или пароль');
-      } else if (typeof err === 'string') {
-        setError(err);
-      } else if (err && typeof err === 'object' && 'message' in err && typeof (err as LoginError).message === 'string') {
-        setError((err as LoginError).message);
-      } else {
-        setError('Неверный email или пароль');
-      }
+    } catch (err: any) {
+      setError(err.message || 'Неверный email или пароль');
     }
   };
 
-  /**
-   * Обработчик изменения полей формы
-   */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev: FormData): FormData => ({ ...prev, [name]: value }));
-    
-    // Очищаем ошибку при изменении поля
-    if (error) {
-      setError('');
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.formContainer}>
+      <div>
         <h2 className={`text text_type_main-large ${styles.title}`}>Вход</h2>
 
-        {/* Отображение ошибки */}
-        {error && (
-          <div className={`text text_type_main-default ${styles.errorMessage}`}>
-            {error}
-          </div>
-        )}
+        {error && <div className="text text_type_main-default">{error}</div>}
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.inputGroup}>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-6">
             <EmailInput
               name="email"
               placeholder="E-mail"
               value={formData.email}
               onChange={handleChange}
               isIcon={false}
-              error={!!error && !formData.email.trim()}
             />
-            
+          </div>
+          <div className="mb-6">
             <PasswordInput
               name="password"
               placeholder="Пароль"
               value={formData.password}
               onChange={handleChange}
-              error={!!error && !formData.password.trim()}
             />
           </div>
-
           <div className={styles.buttonContainer}>
-            <Button 
-              htmlType="submit" 
-              size="medium" 
-              type="primary"
-            >
+            <Button htmlType="submit" size="medium" type="primary">
               Войти
             </Button>
           </div>

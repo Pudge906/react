@@ -38,30 +38,34 @@ export default function IngredientDetails(): React.ReactElement | null {
       </div>
       <div className={styles.nutrition}>
         <div className={styles.nutritionItem}>
-          <span className={`text text_type_main-medium ${styles.label}`}>
+          <span className={`text text_type_main-medium ${styles.nutritionLabel}`}>
             Калории, ккал
           </span>
-          <span className={`text text_type_main-medium ${styles.label}`}>
+          <span className={`text text_type_main-medium ${styles.nutritionLabel}`}>
             {currentIngredient.calories}
           </span>
         </div>
         <div className={styles.nutritionItem}>
-          <span className={`text text_type_main-medium ${styles.label}`}>Белки, г</span>
-          <span className={`text text_type_main-medium ${styles.label}`}>
+          <span className={`text text_type_main-medium ${styles.nutritionLabel}`}>
+            Белки, г
+          </span>
+          <span className={`text text_type_main-medium ${styles.nutritionLabel}`}>
             {currentIngredient.proteins}
           </span>
         </div>
         <div className={styles.nutritionItem}>
-          <span className={`text text_type_main-medium ${styles.label}`}>Жиры, г</span>
-          <span className={`text text_type_main-medium ${styles.label}`}>
+          <span className={`text text_type_main-medium ${styles.nutritionLabel}`}>
+            Жиры, г
+          </span>
+          <span className={`text text_type_main-medium ${styles.nutritionLabel}`}>
             {currentIngredient.fat}
           </span>
         </div>
         <div className={styles.nutritionItem}>
-          <span className={`text text_type_main-medium ${styles.label}`}>
+          <span className={`text text_type_main-medium ${styles.nutritionLabel}`}>
             Углеводы, г
           </span>
-          <span className={`text text_type_main-medium ${styles.label}`}>
+          <span className={`text text_type_main-medium ${styles.nutritionLabel}`}>
             {currentIngredient.carbohydrates}
           </span>
         </div>

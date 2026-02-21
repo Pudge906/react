@@ -1,62 +1,26 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+
 import { authApi } from '@utils/api';
-import { getToken, removeToken, setToken } from './auth_utils.js';
+
+import { getToken, removeToken, setToken } from './auth_utils.ts';
 
 // src/services/auth_slice.ts
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-// ==================== ТИПЫ ====================
-interface User {
+type User = {
   name: string;
   email: string;
-}
+  // Добавь другие поля, если есть
+};
 
-interface AuthState {
+type AuthState = {
   user: User | null;
   isLoading: boolean;
   error: string | null;
   isAuth: boolean;
   isCheckAuthStarted: boolean;
-}
+};
 
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface RegisterData {
-  email: string;
-  password: string;
-  name: string;
-}
-
-interface UpdateUserData {
-  name: string;
-  email: string;
-  password?: string;
-}
-
-interface ApiError {
-  message: string;
-  status?: number;
-}
-
-// ==================== КОНСТАНТЫ ====================
-const ERROR_MESSAGES = {
-  LOGIN_FAILED: 'Ошибка входа',
-  REGISTER_FAILED: 'Ошибка регистрации',
-  LOGOUT_FAILED: 'Выход не удался',
-  UNAUTHORIZED: 'Не авторизован',
-  UPDATE_FAILED: 'Не удалось обновить данные',
-  SESSION_EXPIRED: 'Сессия истекла',
-  AUTH_CHECK_FAILED: 'Auth check failed',
-} as const;
-
-// Логирование только в development
-const log = process.env.NODE_ENV === 'development' ? console.log : (): void => {};
-const logError = process.env.NODE_ENV === 'development' ? console.error : (): void => {};
-
-// ==================== НАЧАЛЬНОЕ СОСТОЯНИЕ ====================
 const initialState: AuthState = {
   user: null,
   isLoading: false,
@@ -65,404 +29,375 @@ const initialState: AuthState = {
   isCheckAuthStarted: false,
 };
 
-// ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
-const getAuthHeaders = (): { Authorization?: string } => {
+const getAuthHeaders = () => {
   const { accessToken } = getToken();
-  return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+  return accessToken ? { Authorization: accessToken } : {};
 };
 
-const getErrorMessage = (err: unknown, defaultMessage: string): string => {
-  if (err instanceof Error) {
-    return err.message || defaultMessage;
-  }
-  
-  if (typeof err === 'string') {
-    return err;
-  }
-  
-  if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string') {
-    return err.message;
-  }
-  
-  return defaultMessage;
+type LoginData = {
+  email: string;
+  password: string;
 };
 
-const isUnauthorizedError = (err: unknown): boolean => {
-  if (err instanceof Error) {
-    return err.message?.includes('401') || err.message?.includes('Unauthorized');
-  }
-  return false;
-};
-
-// ==================== ASYNC THUNKS ====================
-
-/**
- * Вход пользователя
- */
 export const loginUser = createAsyncThunk<User, LoginData, { rejectValue: string }>(
   'auth/loginUser',
-  async ({ email, password }, { rejectWithValue, dispatch }): Promise<User> => {
+  async ({ email, password }, { rejectWithValue, dispatch }) => {
     try {
-      log('[auth_slice] loginUser: starting login process');
       const data = await authApi.login({ email, password });
-      
-      log('[auth_slice] loginUser: received tokens, setting and fetching user data...');
+      console.log(
+        '[auth_slice] loginUser: received tokens, setting and fetching user data...'
+      );
       setToken(data.accessToken, data.refreshToken);
-      
       await dispatch(getUserData());
-      log('[auth_slice] loginUser: successful, returning user data');
-      
+      console.log('[auth_slice] loginUser: successful, returning user data');
       return data.user;
-    } catch (err) {
-      const message = getErrorMessage(err, ERROR_MESSAGES.LOGIN_FAILED);
-      logError('[auth_slice] loginUser: failed', message);
-      return rejectWithValue(message);
+    } catch (err: any) {
+      console.error('[auth_slice] loginUser: failed', err.message);
+      return rejectWithValue(err.message || 'Ошибка входа');
     }
   }
 );
 
-/**
- * Регистрация пользователя
- */
-export const registerUser = createAsyncThunk<User, RegisterData, { rejectValue: string }>(
+type RegisterData = {
+  email: string;
+  password: string;
+  name: string;
+};
+
+export const registerUser = createAsyncThunk<
+  User,
+  RegisterData,
+  { rejectValue: string }
+>(
   'auth/registerUser',
-  async ({ email, password, name }, { rejectWithValue, dispatch }): Promise<User> => {
+  async ({ email, password, name }, { rejectWithValue, dispatch }) => {
     try {
-      log('[auth_slice] registerUser: starting registration process');
       const data = await authApi.register({ email, password, name });
-      
-      log('[auth_slice] registerUser: received tokens, setting and fetching user data...');
+      console.log(
+        '[auth_slice] registerUser: received tokens, setting and fetching user data...'
+      );
       setToken(data.accessToken, data.refreshToken);
-      
       await dispatch(getUserData());
-      log('[auth_slice] registerUser: successful, returning user data');
-      
+      console.log('[auth_slice] registerUser: successful, returning user data');
       return data.user;
-    } catch (err) {
-      const message = getErrorMessage(err, ERROR_MESSAGES.REGISTER_FAILED);
-      logError('[auth_slice] registerUser: failed', message);
-      return rejectWithValue(message);
+    } catch (err: any) {
+      console.error('[auth_slice] registerUser: failed', err.message);
+      return rejectWithValue(err.message || 'Ошибка регистрации');
     }
   }
 );
 
-/**
- * Выход пользователя
- */
 export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   'auth/logoutUser',
-  async (_, { rejectWithValue }): Promise<void> => {
+  async (_, { rejectWithValue }) => {
     try {
       const { refreshToken } = getToken();
-      log('[auth_slice] logoutUser: calling API logout with refreshToken...');
-      
-      if (refreshToken) {
-        await authApi.logout({ token: refreshToken });
-      }
-      
-      log('[auth_slice] logoutUser: API call successful');
-    } catch (err) {
-      const message = getErrorMessage(err, ERROR_MESSAGES.LOGOUT_FAILED);
-      logError('[auth_slice] logoutUser: API call failed', message);
-      return rejectWithValue(message);
-    } finally {
-      // Всегда удаляем токены, даже если API запрос не удался
+      console.log('[auth_slice] logoutUser: calling API logout with refreshToken...');
+      await authApi.logout({ token: refreshToken });
+      console.log('[auth_slice] logoutUser: API call successful, removing tokens...');
       removeToken();
-      log('[auth_slice] logoutUser: tokens removed');
+      console.log('[auth_slice] logoutUser: tokens removed, returning null');
+    } catch (err: any) {
+      console.error(
+        '[auth_slice] logoutUser: failed or error during API call, removing tokens anyway...',
+        err.message
+      );
+      removeToken();
+      return rejectWithValue(err.message || 'Выход не удался');
     }
   }
 );
 
-/**
- * Проверка авторизации при загрузке приложения
- */
 export const checkAuth = createAsyncThunk<boolean, void, { rejectValue: string }>(
   'auth/checkAuth',
-  async (_, { dispatch, rejectWithValue }): Promise<boolean> => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
       const { accessToken } = getToken();
-      log('[auth_slice] checkAuth: starting, token exists?', !!accessToken);
-      
+      console.log('[auth_slice] checkAuth: starting, token exists?', !!accessToken);
       if (!accessToken) {
-        log('[auth_slice] checkAuth: no token, returning false');
+        console.log('[auth_slice] checkAuth: no token, returning false');
         return false;
       }
-      
-      log('[auth_slice] checkAuth: token exists, dispatching getUserData...');
+      console.log('[auth_slice] checkAuth: token exists, dispatching getUserData...');
       const resultAction = await dispatch(getUserData());
-      
       if (getUserData.fulfilled.match(resultAction)) {
-        log('[auth_slice] checkAuth: getUserData successful, returning true');
+        console.log('[auth_slice] checkAuth: getUserData successful, returning true');
         return true;
       } else {
-        const errorPayload = resultAction.payload;
-        const errorMessage = typeof errorPayload === 'string' 
-          ? errorPayload 
-          : ERROR_MESSAGES.AUTH_CHECK_FAILED;
-        throw new Error(errorMessage);
+        console.log(
+          '[auth_slice] checkAuth: getUserData failed (rejected match), throwing error'
+        );
+        throw new Error(
+          resultAction.payload || 'Failed to get user data during checkAuth'
+        );
       }
-    } catch (err) {
-      const message = getErrorMessage(err, ERROR_MESSAGES.UNAUTHORIZED);
-      logError('[auth_slice] checkAuth: error during check or getUserData:', message);
+    } catch (error: any) {
+      console.error(
+        '[auth_slice] checkAuth: error during check or getUserData:',
+        error.message
+      );
       removeToken();
-      log('[auth_slice] checkAuth: token removed due to error');
-      return rejectWithValue(message);
+      console.log(
+        '[auth_slice] checkAuth: token removed due to error, rejecting with message'
+      );
+      return rejectWithValue(error.message || 'Auth check failed');
     }
   }
 );
 
-/**
- * Обновление токена
- */
 export const refreshUserToken = createAsyncThunk<boolean, void, { rejectValue: string }>(
   'auth/refreshUserToken',
-  async (_, { rejectWithValue, dispatch }): Promise<boolean> => {
+  async (_, { rejectWithValue, dispatch }) => {
     try {
       const { refreshToken } = getToken();
-      log('[auth_slice] refreshUserToken: starting with refreshToken exists?', !!refreshToken);
-      
-      if (!refreshToken) {
-        throw new Error('No refresh token available');
-      }
-      
+      console.log(
+        '[auth_slice] refreshUserToken: starting with refreshToken exists?',
+        !!refreshToken
+      );
       const data = await authApi.refreshToken({ token: refreshToken });
-      log('[auth_slice] refreshUserToken: API call successful, setting new tokens...');
-      
+      console.log(
+        '[auth_slice] refreshUserToken: API call successful, setting new tokens...'
+      );
       setToken(data.accessToken, data.refreshToken);
       await dispatch(getUserData());
-      
-      log('[auth_slice] refreshUserToken: getUserData after refresh successful, returning true');
+      console.log(
+        '[auth_slice] refreshUserToken: getUserData after refresh successful, returning true'
+      );
       return true;
-    } catch (err) {
-      const message = getErrorMessage(err, ERROR_MESSAGES.SESSION_EXPIRED);
-      logError('[auth_slice] refreshUserToken: failed', message);
+    } catch (err: any) {
+      console.error('[auth_slice] refreshUserToken: failed', err.message);
       removeToken();
-      return rejectWithValue(message);
+      return rejectWithValue(err.message || 'Сессия истекла');
     }
   }
 );
 
-/**
- * Получение данных пользователя
- */
 export const getUserData = createAsyncThunk<User, void, { rejectValue: string }>(
   'auth/getUserData',
-  async (_, { rejectWithValue }): Promise<User> => {
+  async (_, { rejectWithValue }) => {
     try {
       const headers = getAuthHeaders();
-      log('[auth_slice] getUserData: attempting to fetch user data with headers.Authorization?', !!headers.Authorization);
-      
-      if (!headers.Authorization) {
-        throw new Error('No authorization token');
-      }
-      
+      console.log(
+        '[auth_slice] getUserData: attempting to fetch user data with headers.Authorization?',
+        !!headers.Authorization
+      );
       const data = await authApi.getUser(headers.Authorization);
-      log('[auth_slice] getUserData: successful, returning user data');
-      
+      console.log('[auth_slice] getUserData: successful, returning user data');
       return data.user;
-    } catch (err) {
-      const message = getErrorMessage(err, ERROR_MESSAGES.UNAUTHORIZED);
-      logError('[auth_slice] getUserData: failed', message);
-      
-      // Проверяем на 401 ошибку
-      if (isUnauthorizedError(err)) {
-        log('[auth_slice] getUserData: 401 detected, removing tokens');
+    } catch (err: any) {
+      console.error('[auth_slice] getUserData: failed', err.message);
+      if (err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        console.log('[auth_slice] getUserData: 401 detected, removing tokens');
         removeToken();
       }
-      
-      return rejectWithValue(message);
+      return rejectWithValue(err.message || 'Не авторизован');
     }
   }
 );
 
-/**
- * Обновление данных пользователя
- */
-export const updateUserData = createAsyncThunk<User, UpdateUserData, { rejectValue: string }>(
-  'auth/updateUserData',
-  async ({ name, email, password }, { rejectWithValue }): Promise<User> => {
-    try {
-      const headers = getAuthHeaders();
-      
-      if (!headers.Authorization) {
-        throw new Error('No authorization token');
-      }
+type UpdateUserData = {
+  name: string;
+  email: string;
+  password?: string;
+};
 
-      const payload: { name: string; email: string; password?: string } = { name, email };
-      if (password) {
-        payload.password = password;
-      }
+export const updateUserData = createAsyncThunk<
+  User,
+  UpdateUserData,
+  { rejectValue: string }
+>('auth/updateUserData', async ({ name, email, password }, { rejectWithValue }) => {
+  try {
+    const headers = getAuthHeaders();
 
-      const data = await authApi.updateUser(payload, headers.Authorization);
-      log('[auth_slice] updateUserData: successful, returning user data');
-      
-      return data.user;
-    } catch (err) {
-      const message = getErrorMessage(err, ERROR_MESSAGES.UPDATE_FAILED);
-      logError('[auth_slice] updateUserData: failed', message);
-      return rejectWithValue(message);
-    }
+    const payload = { name, email };
+    if (password) payload.password = password;
+
+    const data = await authApi.updateUser(payload, headers.Authorization);
+    console.log('[auth_slice] updateUserData: successful, returning user data');
+    return data.user;
+  } catch (err: any) {
+    console.error('[auth_slice] updateUserData: failed', err.message);
+    return rejectWithValue(err.message || 'Не удалось обновить данные');
   }
-);
+});
 
-// ==================== SLICE ====================
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    clearError: (state): void => {
+    clearError: (state) => {
       state.error = null;
     },
-    setCheckAuthStarted: (state): void => {
+
+    setCheckAuthStarted: (state) => {
       state.isCheckAuthStarted = true;
-    },
-    resetCheckAuthStarted: (state): void => {
-      state.isCheckAuthStarted = false;
-    },
-    resetAuth: (state): void => {
-      state.user = null;
-      state.isAuth = false;
-      state.error = null;
-      state.isLoading = false;
-      state.isCheckAuthStarted = false;
-      removeToken();
     },
   },
   extraReducers: (builder) => {
     builder
-      // ===== LOGIN =====
+
       .addCase(loginUser.pending, (state) => {
-        log('[auth_slice] Reducer: loginUser.pending');
+        console.log(
+          '[auth_slice] Reducer: loginUser.pending - isLoading true, error null'
+        );
         state.isLoading = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action: PayloadAction<User>) => {
-        log('[auth_slice] Reducer: loginUser.fulfilled');
+        console.log(
+          '[auth_slice] Reducer: loginUser.fulfilled - isLoading false, user set, isAuth true'
+        );
         state.isLoading = false;
         state.user = action.payload;
         state.isAuth = true;
       })
-      .addCase(loginUser.rejected, (state, action: PayloadAction<string | undefined>) => {
-        log('[auth_slice] Reducer: loginUser.rejected');
-        state.isLoading = false;
-        state.error = action.payload || ERROR_MESSAGES.LOGIN_FAILED;
-        state.isAuth = false;
-      })
+      .addCase(
+        loginUser.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          console.log(
+            '[auth_slice] Reducer: loginUser.rejected - isLoading false, error set, isAuth false'
+          );
+          state.isLoading = false;
+          state.error = action.payload || null;
+          state.isAuth = false;
+        }
+      )
 
-      // ===== REGISTER =====
       .addCase(registerUser.pending, (state) => {
-        log('[auth_slice] Reducer: registerUser.pending');
+        console.log(
+          '[auth_slice] Reducer: registerUser.pending - isLoading true, error null'
+        );
         state.isLoading = true;
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action: PayloadAction<User>) => {
-        log('[auth_slice] Reducer: registerUser.fulfilled');
+        console.log(
+          '[auth_slice] Reducer: registerUser.fulfilled - isLoading false, user set, isAuth true'
+        );
         state.isLoading = false;
         state.user = action.payload;
         state.isAuth = true;
       })
-      .addCase(registerUser.rejected, (state, action: PayloadAction<string | undefined>) => {
-        log('[auth_slice] Reducer: registerUser.rejected');
-        state.isLoading = false;
-        state.error = action.payload || ERROR_MESSAGES.REGISTER_FAILED;
-        state.isAuth = false;
-      })
+      .addCase(
+        registerUser.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          console.log(
+            '[auth_slice] Reducer: registerUser.rejected - isLoading false, error set, isAuth false'
+          );
+          state.isLoading = false;
+          state.error = action.payload || null;
+          state.isAuth = false;
+        }
+      )
 
-      // ===== LOGOUT =====
-      .addCase(logoutUser.pending, (state) => {
-        log('[auth_slice] Reducer: logoutUser.pending');
-        state.isLoading = true;
-      })
       .addCase(logoutUser.fulfilled, (state) => {
-        log('[auth_slice] Reducer: logoutUser.fulfilled');
+        console.log(
+          '[auth_slice] Reducer: logoutUser.fulfilled - user null, isAuth false, error null, isLoading false'
+        );
         state.user = null;
         state.isAuth = false;
         state.error = null;
         state.isLoading = false;
-        state.isCheckAuthStarted = false;
       })
-      .addCase(logoutUser.rejected, (state, action: PayloadAction<string | undefined>) => {
-        log('[auth_slice] Reducer: logoutUser.rejected');
-        state.error = action.payload || ERROR_MESSAGES.LOGOUT_FAILED;
-        state.user = null;
-        state.isAuth = false;
-        state.isLoading = false;
-        state.isCheckAuthStarted = false;
-      })
+      .addCase(
+        logoutUser.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          console.log(
+            '[auth_slice] Reducer: logoutUser.rejected - error set, user null, isAuth false, isLoading false'
+          );
+          state.error = action.payload || null;
+          state.user = null;
+          state.isAuth = false;
+          state.isLoading = false;
+        }
+      )
 
-      // ===== CHECK AUTH =====
       .addCase(checkAuth.pending, (state) => {
-        log('[auth_slice] Reducer: checkAuth.pending');
+        console.log(
+          '[auth_slice] Reducer: checkAuth.pending - isLoading true, isCheckAuthStarted true'
+        );
         state.isLoading = true;
         state.isCheckAuthStarted = true;
       })
       .addCase(checkAuth.fulfilled, (state, action: PayloadAction<boolean>) => {
-        log('[auth_slice] Reducer: checkAuth.fulfilled');
+        console.log(
+          '[auth_slice] Reducer: checkAuth.fulfilled - isLoading false, isAuth set to',
+          action.payload
+        );
         state.isLoading = false;
         state.isAuth = action.payload;
       })
-      .addCase(checkAuth.rejected, (state, action: PayloadAction<string | undefined>) => {
-        log('[auth_slice] Reducer: checkAuth.rejected');
-        state.isLoading = false;
-        state.isAuth = false;
-        state.user = null;
-        state.error = action.payload || ERROR_MESSAGES.UNAUTHORIZED;
-      })
+      .addCase(
+        checkAuth.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          console.log(
+            '[auth_slice] Reducer: checkAuth.rejected - isLoading false, isAuth false, error set'
+          );
+          state.isLoading = false;
+          state.isAuth = false;
+          state.user = null;
+          state.error = action.payload || null;
+        }
+      )
 
-      // ===== GET USER DATA =====
       .addCase(getUserData.fulfilled, (state, action: PayloadAction<User>) => {
-        log('[auth_slice] Reducer: getUserData.fulfilled');
+        console.log(
+          '[auth_slice] Reducer: getUserData.fulfilled - user set. isLoading/isAuth managed by checkAuth.'
+        );
         state.user = action.payload;
       })
-      .addCase(getUserData.rejected, (state, action: PayloadAction<string | undefined>) => {
-        log('[auth_slice] Reducer: getUserData.rejected');
-        state.user = null;
-        state.error = action.payload || ERROR_MESSAGES.UNAUTHORIZED;
-      })
+      .addCase(
+        getUserData.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          console.log(
+            '[auth_slice] Reducer: getUserData.rejected - user cleared, error set. isLoading/isAuth managed by checkAuth.'
+          );
+          state.user = null;
+          state.error = action.payload || null;
+        }
+      )
 
-      // ===== REFRESH TOKEN =====
-      .addCase(refreshUserToken.pending, (state) => {
-        log('[auth_slice] Reducer: refreshUserToken.pending');
-        state.isLoading = true;
-      })
-      .addCase(refreshUserToken.fulfilled, (state) => {
-        log('[auth_slice] Reducer: refreshUserToken.fulfilled');
-        state.isLoading = false;
-      })
-      .addCase(refreshUserToken.rejected, (state, action: PayloadAction<string | undefined>) => {
-        log('[auth_slice] Reducer: refreshUserToken.rejected');
-        state.isLoading = false;
-        state.error = action.payload || ERROR_MESSAGES.SESSION_EXPIRED;
-        state.isAuth = false;
-        state.user = null;
-        // Токены уже удалены в thunk
-      })
+      .addCase(
+        refreshUserToken.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          console.log(
+            '[auth_slice] Reducer: refreshUserToken.rejected - isLoading false, error set, isAuth false, user null, tokens removed'
+          );
+          state.isLoading = false;
+          state.error = action.payload || null;
+          state.isAuth = false;
+          state.user = null;
+          removeToken();
+        }
+      )
 
-      // ===== UPDATE USER DATA =====
       .addCase(updateUserData.pending, (state) => {
-        log('[auth_slice] Reducer: updateUserData.pending');
+        console.log(
+          '[auth_slice] Reducer: updateUserData.pending - isLoading true, error null'
+        );
         state.isLoading = true;
         state.error = null;
       })
       .addCase(updateUserData.fulfilled, (state, action: PayloadAction<User>) => {
-        log('[auth_slice] Reducer: updateUserData.fulfilled');
+        console.log(
+          '[auth_slice] Reducer: updateUserData.fulfilled - isLoading false, user set'
+        );
         state.isLoading = false;
         state.user = action.payload;
       })
-      .addCase(updateUserData.rejected, (state, action: PayloadAction<string | undefined>) => {
-        log('[auth_slice] Reducer: updateUserData.rejected');
-        state.isLoading = false;
-        state.error = action.payload || ERROR_MESSAGES.UPDATE_FAILED;
-      });
+      .addCase(
+        updateUserData.rejected,
+        (state, action: PayloadAction<string | undefined>) => {
+          console.log(
+            '[auth_slice] Reducer: updateUserData.rejected - isLoading false, error set'
+          );
+          state.isLoading = false;
+          state.error = action.payload || null;
+        }
+      );
   },
 });
 
-// ==================== EXPORTS ====================
-export const { 
-  clearError, 
-  setCheckAuthStarted, 
-  resetCheckAuthStarted,
-  resetAuth 
-} = authSlice.actions;
+export const { clearError, setCheckAuthStarted } = authSlice.actions;
 
 export default authSlice.reducer;

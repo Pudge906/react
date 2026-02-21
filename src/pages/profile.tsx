@@ -12,32 +12,16 @@ import { ProfileLayout } from '@/layouts/ProfileLayout';
 import { getUserData, logoutUser, updateUserData } from '@services/auth_slice.ts';
 
 import type { RootState } from '@services/store';
-import type { UnknownAction } from '@reduxjs/toolkit';
 
-// ==================== ТИПЫ ====================
-interface User {
-  name: string;
-  email: string;
-}
+type User = { name: string; email: string };
+type AuthState = { user: User | null; isLoading: boolean; error: string | null };
+type FormValues = { name: string; email: string; password: string };
 
-interface AuthState {
-  user: User | null;
-  isLoading: boolean;
-  error: string | null;
-}
-
-interface FormValues {
-  name: string;
-  email: string;
-  password: string;
-}
-
-// ==================== КОМПОНЕНТ ====================
-export default function Profile(): React.ReactElement {
+export default function Profile() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, isLoading, error } = useSelector<RootState, AuthState>(
-    (state): AuthState => state.auth
+    (state) => state.auth
   );
 
   const [form, setForm] = useState<FormValues>({ name: '', email: '', password: '' });
@@ -46,89 +30,58 @@ export default function Profile(): React.ReactElement {
     email: '',
     password: '',
   });
-  const [hasChanges, setHasChanges] = useState<boolean>(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
-  // Загрузка данных пользователя при монтировании
-  useEffect((): void => {
-    dispatch(getUserData() as unknown as UnknownAction);
+  useEffect(() => {
+    dispatch(getUserData());
   }, [dispatch]);
 
-  // Обновление формы при получении данных пользователя
-  useEffect((): void => {
+  useEffect(() => {
     if (user) {
-      const newForm: FormValues = { 
-        name: user.name, 
-        email: user.email, 
-        password: '' 
-      };
+      const newForm = { name: user.name, email: user.email, password: '' };
       setForm(newForm);
       setInitialValues(newForm);
       setHasChanges(false);
     }
   }, [user]);
 
-  // Обработчик изменения полей формы
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setForm((prev: FormValues): FormValues => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
 
-    // Проверяем, были ли изменения
-    const isChanged: boolean = 
+    const isChanged =
       form.name !== initialValues.name ||
       form.email !== initialValues.email ||
-      (form.password !== initialValues.password && form.password !== '');
+      form.password !== initialValues.password;
 
     setHasChanges(isChanged);
   };
 
-  // Обработчик отправки формы
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const payload: Partial<FormValues> = { 
-      name: form.name, 
-      email: form.email 
-    };
-    
-    if (form.password.trim()) {
-      payload.password = form.password;
-    }
+    const payload: Partial<FormValues> = { name: form.name, email: form.email };
+    if (form.password.trim()) payload.password = form.password;
 
     try {
-      await dispatch(updateUserData(payload) as unknown as UnknownAction).unwrap();
+      await dispatch(updateUserData(payload)).unwrap();
       setInitialValues({ name: form.name, email: form.email, password: '' });
-      setForm((prev: FormValues): FormValues => ({ ...prev, password: '' }));
+      setForm((prev) => ({ ...prev, password: '' }));
       setHasChanges(false);
-    } catch (err: unknown) {
-      // Безопасная обработка ошибки
-      if (err instanceof Error) {
-        console.error('Ошибка обновления профиля:', err.message);
-      } else if (typeof err === 'string') {
-        console.error('Ошибка обновления профиля:', err);
-      } else {
-        console.error('Неизвестная ошибка при обновлении профиля');
-      }
+    } catch (err) {
+      console.error('Ошибка:', err);
     }
   };
 
-  // Обработчик отмены изменений
-  const handleCancel = (): void => {
+  const handleCancel = () => {
     setForm({ ...initialValues, password: '' });
     setHasChanges(false);
   };
 
-  // Обработчик выхода из системы
-  const handleLogout = async (): Promise<void> => {
-    try {
-      await dispatch(logoutUser() as unknown as UnknownAction).unwrap();
-      navigate('/login');
-    } catch (err: unknown) {
-      // Даже если ошибка, пытаемся перенаправить
-      navigate('/login');
-    }
+  const handleLogout = async () => {
+    await dispatch(logoutUser()).unwrap();
+    navigate('/login');
   };
 
-  // Состояние загрузки
   if (isLoading && !user) {
     return (
       <ProfileLayout>
@@ -137,7 +90,6 @@ export default function Profile(): React.ReactElement {
     );
   }
 
-  // Состояние ошибки
   if (error) {
     return (
       <ProfileLayout>
@@ -146,7 +98,6 @@ export default function Profile(): React.ReactElement {
     );
   }
 
-  // Основной рендер
   return (
     <ProfileLayout>
       <form onSubmit={handleSubmit}>
@@ -181,11 +132,7 @@ export default function Profile(): React.ReactElement {
 
         {hasChanges && (
           <div>
-            <Button 
-              htmlType="submit" 
-              size="medium" 
-              type="primary"
-            >
+            <Button htmlType="submit" size="medium" type="primary">
               Сохранить
             </Button>
             <Button
@@ -199,18 +146,6 @@ export default function Profile(): React.ReactElement {
           </div>
         )}
       </form>
-      
-      {/* Кнопка выхода всегда отображается */}
-      <div className="mt-10">
-        <Button
-          htmlType="button"
-          size="medium"
-          type="secondary"
-          onClick={handleLogout}
-        >
-          Выход
-        </Button>
-      </div>
     </ProfileLayout>
   );
 }

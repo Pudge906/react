@@ -6,9 +6,10 @@
   align-items: center;
   min-height: 70vh;
   padding: 2rem 1rem;
+ 
 }
 
-.formContainer {
+.form-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -17,7 +18,7 @@
   padding: 24px;
   background: #1c1c21;
   border-radius: 40px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 50%);
 }
 
 .title {
@@ -30,70 +31,42 @@
   text-align: center;
 }
 
-.errorMessage {
-  margin-bottom: 16px;
-  color: #ff5252;
-  font-size: 14px;
+.error {
+  margin-bottom: 1rem;
+  color: #f55;
+  font-size: 0.875rem;
   text-align: center;
-  padding: 8px;
-  background: rgba(255, 82, 82, 0.1);
-  border-radius: 8px;
-  width: 100%;
 }
 
-.inputGroup {
+.input-group {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 100%;
 }
 
-/* Стили для полей ввода - используем селекторы атрибутов */
-.inputGroup [class*="input__container"] {
-  width: 100%;
-}
-
-.inputGroup [class*="input"] {
-  width: 100%;
-}
-
-.form {
-  width: 100%;
-}
 
 .buttonContainer {
   display: flex;
   justify-content: center;
-  margin-top: 24px;
-  width: 100%;
+  margin-top: 24px; /* 24px × 6 от последнего поля до кнопки */
 }
 
 .links {
-  margin-top: 80px;
-  color: #8585AD;
+  margin-top: 80px; /* 80px × 20 от кнопки до ссылок */
+  color: #aaa;
   font-size: 16px;
   line-height: 1.5;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-}
-
-.links p {
-  margin: 0;
-  color: #8585AD;
 }
 
 .links a {
-  color: #4C4CFF;
+  margin-left: 0.25rem;
+  color: #4d4dff;
   font-weight: 500;
-  text-decoration: none;
-  transition: opacity 0.2s ease;
-  margin-left: 8px;
+  text-decoration: underline;
+  transition: color 0.2s ease;
 }
 
 .links a:hover {
-  opacity: 0.8;
-  text-decoration: underline;
+  color: #c684ff;
 }

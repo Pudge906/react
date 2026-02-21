@@ -1,91 +1,55 @@
 import { wsClose, wsError, wsMessage, wsOpen } from './order_feed_slice';
 import { wsMessage as wsProfileMessage } from './profile_orders_slice';
 
-import type { Middleware, MiddlewareAPI } from '@reduxjs/toolkit';
+import type { Middleware } from '@reduxjs/toolkit';
+
 import type { OrdersWsResponse } from '../types/order';
 
-// ==================== ТИПЫ ====================
-interface WsAction {
+type WsAction = {
   readonly type: string;
   readonly payload?: string;
-}
+};
 
-interface WsProfileOpenAction {
-  type: 'WS_PROFILE_OPEN';
-}
-
-interface WsProfileCloseAction {
-  type: 'WS_PROFILE_CLOSE';
-}
-
-type WsProfileAction = WsProfileOpenAction | WsProfileCloseAction;
-
-// ==================== КОНСТАНТЫ ====================
 export const WS_CONNECT = 'WS_CONNECT';
 export const WS_DISCONNECT = 'WS_DISCONNECT';
 
-const ERROR_MESSAGES = {
-  INVALID_JSON: 'Invalid JSON from server',
-  INVALID_TOKEN: 'Токен недействителен. Пожалуйста, войдите снова.',
-  SERVER_ERROR: 'Ошибка сервера',
-  CONNECTION_LOST: 'Connection lost',
-  WEBSOCKET_ERROR: 'WebSocket error',
-} as const;
-
-// ==================== MIDDLEWARE ====================
 export const wsMiddleware = (wsUrl: string, isProfile = false): Middleware => {
-  return (store: MiddlewareAPI) => {
+  return (store) => {
     let socket: WebSocket | null = null;
 
-    return (next: (action: WsAction) => void) => (action: WsAction): WsAction => {
+    return (next) => (action: WsAction) => {
       const { dispatch } = store;
       const { type, payload } = action;
 
-      // Подключение к WebSocket
       if (type === WS_CONNECT) {
-        if (payload) {
-          const wsUrlWithToken = `${wsUrl}${payload}`;
-          socket = new WebSocket(wsUrlWithToken);
-        } else {
-          socket = new WebSocket(wsUrl);
-        }
+        socket = new WebSocket(payload!);
       }
 
-      // Отключение от WebSocket
-      if (type === WS_DISCONNECT && socket) {
-        socket.close();
-        socket = null;
-      }
-
-      // Настройка обработчиков событий WebSocket
       if (socket) {
-        // Обработчик открытия соединения
-        socket.onopen = (): void => {
+        socket.onopen = () => {
           if (isProfile) {
-            dispatch({ type: 'WS_PROFILE_OPEN' } as WsProfileOpenAction);
+            dispatch({ type: 'WS_PROFILE_OPEN' });
           } else {
             dispatch(wsOpen());
           }
         };
 
-        // Обработчик получения сообщения
-        socket.onmessage = (event: MessageEvent): void => {
+        socket.onmessage = (event) => {
           const { data } = event;
           let parsedData: OrdersWsResponse;
-          
           try {
-            parsedData = JSON.parse(data) as OrdersWsResponse;
+            parsedData = JSON.parse(data);
           } catch {
-            dispatch(wsError(ERROR_MESSAGES.INVALID_JSON));
+            dispatch(wsError('Invalid JSON from server'));
             return;
           }
 
           if (!parsedData.success) {
             if (parsedData.message === 'Invalid or missing token') {
-              dispatch(wsError(ERROR_MESSAGES.INVALID_TOKEN));
-              socket?.close();
+              dispatch(wsError('Токен недействителен. Пожалуйста, войдите снова.'));
+              socket.close();
             } else {
-              dispatch(wsError(parsedData.message || ERROR_MESSAGES.SERVER_ERROR));
+              dispatch(wsError(parsedData.message || 'Ошибка сервера'));
             }
             return;
           }
@@ -97,21 +61,19 @@ export const wsMiddleware = (wsUrl: string, isProfile = false): Middleware => {
           }
         };
 
-        // Обработчик ошибки
-        socket.onerror = (): void => {
-          dispatch(wsError(ERROR_MESSAGES.WEBSOCKET_ERROR));
+        socket.onerror = (event) => {
+          dispatch(wsError('WebSocket error'));
         };
 
-        // Обработчик закрытия соединения
-        socket.onclose = (event: CloseEvent): void => {
+        socket.onclose = (event) => {
           if (event.wasClean) {
             if (isProfile) {
-              dispatch({ type: 'WS_PROFILE_CLOSE' } as WsProfileCloseAction);
+              dispatch({ type: 'WS_PROFILE_CLOSE' });
             } else {
               dispatch(wsClose());
             }
           } else {
-            dispatch(wsError(ERROR_MESSAGES.CONNECTION_LOST));
+            dispatch(wsError('Connection lost'));
           }
         };
       }
@@ -120,16 +82,3 @@ export const wsMiddleware = (wsUrl: string, isProfile = false): Middleware => {
     };
   };
 };
-
-// ==================== ТИПЫ ДЛЯ ЭКШЕНОВ ====================
-// Экспортируем типы для использования в других файлах
-export type WsConnectAction = {
-  type: typeof WS_CONNECT;
-  payload?: string;
-};
-
-export type WsDisconnectAction = {
-  type: typeof WS_DISCONNECT;
-};
-
-export type WebSocketActions = WsConnectAction | WsDisconnectAction;

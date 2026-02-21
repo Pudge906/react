@@ -9,11 +9,13 @@ import orderReducer from './order_slice.ts';
 import profileOrdersReducer from './profile_orders_slice';
 import { wsMiddleware } from './wsMiddleware';
 
+// URL для WebSocket
 const wsUrlAll = 'wss://norma.education-services.ru/orders/all';
-const wsUrlPersonal = 'wss://norma.education-services.ru/orders';
+const wsUrlPersonal = 'wss://norma.education-services.ru/orders'; // + ?token=
 
-const wsOrdersAllMiddleware = wsMiddleware(wsUrlAll, false);
-const wsOrdersProfileMiddleware = wsMiddleware(wsUrlPersonal, true);
+// Подключаем мидлвары
+const wsOrdersAllMiddleware = wsMiddleware(wsUrlAll, false); // для общей ленты
+const wsOrdersProfileMiddleware = wsMiddleware(wsUrlPersonal, true); // для профиля
 
 export const store = configureStore({
   reducer: {

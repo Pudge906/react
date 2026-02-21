@@ -1,95 +1,123 @@
-/* src/pages/order-details.module.css */
-
 .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px;
+  display: flex;
+}
+
+.content {
+  display: flex;
+  gap: 40px;
+  width: 100%;
+}
+
+.ordersList {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
-
-.number {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.name {
-  text-align: left;
-  width: 100%;
-  margin-bottom: 12px;
-}
-
-.status {
-  text-align: left;
-  width: 100%;
-  margin-bottom: 60px;
-  color: #00CCCC;
-}
-
-.ingredientsTitle {
-  text-align: left;
-  width: 100%;
-  margin-bottom: 24px;
-}
-
-.ingredientsListWrapper {
-  width: 100%;
-  max-height: 312px;
+  gap: 20px;
+  max-height: calc(100vh - 350px);
   overflow-y: auto;
-  margin-bottom: 40px;
   padding-right: 8px;
 }
 
-.ingredientsList {
+.ordersList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ordersList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ordersList::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.ordersList::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.orderCard {
+  background: #1A1A23;
+  border-radius: 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  width: 100%;
+  font-family: 'Inter', sans-serif;
+  gap: 12px;
 }
 
-.ingredientItem {
+
+.statsPanel {
+  width: 320px;
+  border-radius: 20px;
+  padding: 24px;
   display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
+  flex-direction: column;
+  gap: 28px;
 }
 
-.ingredientImage {
-  width: 64px;
-  height: 64px;
-  object-fit: cover;
-  border-radius: 50%;
-  background: #131316;
+.statGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.ingredientName {
+.statGroup h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.statListsContainer {
+  display: flex;
+  gap: 20px;
+}
+
+.statList {
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   flex: 1;
-  text-align: left;
 }
 
-.ingredientPrice {
+.statItem {
   display: flex;
   align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-
-.footer {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-top: 20px;
+  padding: 8px 12px;
+  border-radius: 8px;
 }
 
-.footerDate {
-  color: #8585AD;
+.statItem span {
+  font-size: 19px;
+  font-weight: 500;
+  color: #00F0FF;
 }
 
-.totalPrice {
+
+.info {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
+}
+
+.info p:first-child {
+  font-size: 16px;
+  font-weight: 500;
+  color: #C4C4C4;
+  margin: 0;
+}
+
+.statNumber {
+  font-size: 100px;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-shadow: 0 0 16px rgba(102, 51, 255, 0.7);
+  letter-spacing: -2px;
+  line-height: 1;
 }

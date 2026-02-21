@@ -1,181 +1,63 @@
-/* src/pages/profile.module.css */
-
 .container {
   display: flex;
-  gap: 60px;
-  width: 100%;
-  max-width: 1240px;
-  margin: 40px auto 0;
-  padding: 0 20px;
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem 2rem;
+  color: white;
+  min-height: 100vh;
 }
 
-/* Левая навигация */
 .nav {
-  display: flex;
-  flex-direction: column;
-  width: 320px;
+  width: 250px;
+  flex-shrink: 0;
 }
 
 .navItem {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 64px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: #8585AD;
-  cursor: pointer;
+  display: block;
+  padding: 0.75rem 0;
+  color: #fff;
   text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: color 0.2s;
 }
 
 .navItem:hover {
-  color: #F2F2F3;
+  color: #ccc;
 }
 
 .navItem_active {
-  color: #F2F2F3;
-  pointer-events: none;
+  color: #fff;
+  font-weight: 500;
 }
 
-.navItem span {
+.hint {
+  margin-top: 80px;
+  padding-top: 24px;
+  color: #6e6c6c;
   text-align: left;
 }
 
-/* Подсказка */
-.hint {
-  margin-top: 80px;
-}
-
-.hint p {
-  color: #8585AD;
-  opacity: 0.4;
-}
-
-/* Основной контент */
 .content {
   flex: 1;
-  max-width: 860px;
-}
-
-/* Формы */
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  max-width: 480px;
-}
-
-.buttonGroup {
-  display: flex;
-  justify-content: flex-end;
-  gap: 20px;
-}
-
-/* История заказов */
-.ordersList {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  max-height: calc(100vh - 200px);
   overflow-y: auto;
-  padding-right: 8px;
+  max-height: calc(100vh - 80px);
+  padding-right: 4px;
+
+  scrollbar-color: #101009 transparent;
 }
 
-.orderCard {
-  background: #1C1C21;
-  border-radius: 40px;
-  padding: 24px;
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  transition: opacity 0.2s;
+.content::-webkit-scrollbar {
+  width: 6px;
 }
 
-.orderCard:hover {
-  opacity: 0.8;
+.content::-webkit-scrollbar-thumb {
+  background: #101009;
+  border-radius: 3px;
 }
 
-.orderHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.orderNumber {
-  font-weight: bold;
-}
-
-.orderDate {
-  color: #8585AD;
-}
-
-.orderName {
-  margin-bottom: 8px;
-}
-
-.orderStatus {
-  color: #00CCCC;
-  margin-bottom: 24px;
-}
-
-.orderFooter {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.ingredientsPreview {
-  display: flex;
-  align-items: center;
-}
-
-.ingredientImage {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: #131316;
-  object-fit: cover;
-  margin-right: -16px;
-  border: 2px solid #801AB2;
-}
-
-.ingredientCount {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(19, 19, 22, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: -16px;
-}
-
-.orderPrice {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Детали заказа */
-.orderDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-}
-
-/* Загрузка и ошибки */
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-}
-
-.error {
-  color: #ff5252;
-  text-align: center;
-  padding: 40px;
+.content::-webkit-scrollbar-track {
+  background: transparent;
 }
