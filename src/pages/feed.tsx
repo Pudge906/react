@@ -1,7 +1,8 @@
 // src/pages/feed.tsx
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 
 import { OrderCard } from './order-card';
 
@@ -10,8 +11,8 @@ import type { RootState } from '@services/store';
 import styles from './feed.module.css';
 
 export default function Feed() {
-  const dispatch = useDispatch();
-  const { orders, total, totalToday } = useSelector(
+  const dispatch = useAppDispatch();
+  const { orders, total, totalToday } = useAppSelector(
     (state: RootState) => state.orderFeed
   );
 
@@ -20,6 +21,13 @@ export default function Feed() {
       type: 'WS_CONNECT',
       payload: 'wss://norma.education-services.ru/orders/all',
     });
+
+    // Закрываем соединение при уходе со страницы
+    return () => {
+      dispatch({
+        type: 'WS_DISCONNECT',
+      });
+    };
   }, [dispatch]);
 
   const doneOrders = orders.filter((o) => o.status === 'done').slice(0, 5);
@@ -43,7 +51,6 @@ export default function Feed() {
           ))}
         </div>
 
-        {/* Правая колонка: статистика */}
         {/* Правая колонка: статистика */}
         <div className={styles.statsPanel}>
           <div className={styles.statGroup}>

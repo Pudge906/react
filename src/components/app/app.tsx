@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import { AppHeader } from '@components/app-header/app-header.tsx';
@@ -21,9 +20,10 @@ import Profile from '@pages/profile.tsx';
 import Register from '@pages/register.tsx';
 import Reset_password from '@pages/reset_password.tsx';
 import { checkAuth } from '@services/auth_slice.ts';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { fetchIngredients } from '@services/ingredients_slice.ts';
 
-import type { AppDispatch, RootState } from '@services/store';
+import type { RootState } from '@services/store';
 
 import styles from './app.module.css';
 
@@ -37,10 +37,10 @@ type IngredientState = {
 };
 
 const AppWithRouting: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const location = useLocation<LocationState>();
 
-  const { loading, error } = useSelector<RootState, IngredientState>(
+  const { loading, error } = useAppSelector<RootState, IngredientState>(
     (state) => state.ingredients
   );
 

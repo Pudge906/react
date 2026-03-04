@@ -1,3 +1,4 @@
+// src/types/order.ts
 export type Ingredient = {
   _id: string;
   name: string;
@@ -21,8 +22,8 @@ export type Order = {
   createdAt: string; // ISO
   updatedAt: string; // ISO
   number: number;
-  owner?: string; // only in profile feed
-  price?: number; // calculated on frontend
+  owner?: string;
+  price?: number;
 };
 
 export type OrdersWsResponse = {

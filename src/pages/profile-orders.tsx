@@ -1,11 +1,11 @@
-// src/pages/profile/orders/ProfileOrders.tsx
+// src/pages/profile-orders.tsx
 import { CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 
 import { ProfileLayout } from '@/layouts/ProfileLayout';
 import { getToken } from '@services/auth_utils.ts';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 
 import type { RootState } from '@services/store';
 
@@ -32,8 +32,8 @@ const formatDateForDisplay = (isoString: string): string => {
 };
 
 export default function ProfileOrders() {
-  const dispatch = useDispatch();
-  const { orders, isLoading, error } = useSelector(
+  const dispatch = useAppDispatch();
+  const { orders, isLoading, error } = useAppSelector(
     (state: RootState) => state.profileOrders
   );
 
@@ -44,6 +44,12 @@ export default function ProfileOrders() {
         type: 'WS_CONNECT',
         payload: `wss://norma.education-services.ru/orders?token=${accessToken}`,
       });
+
+      return () => {
+        dispatch({
+          type: 'WS_DISCONNECT',
+        });
+      };
     }
   }, [dispatch]);
 
@@ -64,7 +70,7 @@ export default function ProfileOrders() {
   }
 
   // Получаем ингредиенты из store
-  const { items } = useSelector((state: RootState) => state.ingredients);
+  const { items } = useAppSelector((state: RootState) => state.ingredients);
   const ingredientsMap = new Map(items.map((i) => [i._id, i]));
 
   return (

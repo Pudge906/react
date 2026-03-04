@@ -18,7 +18,7 @@ const formatRelativeDate = (date: Date): string => {
 
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
-  const tz = 'i-GMT+3'; // как в скриншоте
+  const tz = 'i-GMT+3';
 
   return `${dayStr}, ${hours}:${minutes} ${tz}`;
 };

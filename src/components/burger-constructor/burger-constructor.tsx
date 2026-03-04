@@ -3,10 +3,10 @@ import {
   ConstructorElement,
   CurrencyIcon,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { BurgerFilling } from '@components/burger-constructor/burger-filling/burger-filling';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { createOrder } from '@services/order_slice.ts';
 
 import DropTargetConstructor from './DropTargetConstructor.tsx';
@@ -46,13 +46,13 @@ type ConstructorState = {
 };
 
 export const BurgerConstructor: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const constructorState = useSelector<RootState, ConstructorState>(
+  const constructorState = useAppSelector<RootState, ConstructorState>(
     (state) => state.constructor || {}
   );
-  const orderState = useSelector<RootState, OrderState>((state) => state.order || {});
-  const authState = useSelector<RootState, AuthState>((state) => state.auth || {});
+  const orderState = useAppSelector<RootState, OrderState>((state) => state.order || {});
+  const authState = useAppSelector<RootState, AuthState>((state) => state.auth || {});
 
   const bun = constructorState.bun || null;
   const ingredients = constructorState.ingredients || [];

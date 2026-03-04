@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// src/services/profile_orders_slice.ts
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import type { Order, OrdersWsResponse } from '../types/order';
@@ -38,7 +39,6 @@ const profileOrdersSlice = createSlice({
     wsMessage: (state, action: PayloadAction<OrdersWsResponse>) => {
       const { orders, total, totalToday } = action.payload;
 
-      // Валидация: пропускаем некорректные заказы
       const validOrders = orders.filter((order) => {
         return (
           order._id &&

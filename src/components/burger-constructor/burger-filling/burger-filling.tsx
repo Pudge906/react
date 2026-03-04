@@ -4,9 +4,9 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { moveIngredient, removeIngredient } from '@services/constructor_slice.ts';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 
 import type { RootState } from '@services/store';
 
@@ -30,7 +30,7 @@ const DraggableConstructorElement: React.FC<{
   ingredient: Ingredient;
   index: number;
 }> = ({ ingredient, index }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const ref = useRef<HTMLLIElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -148,7 +148,7 @@ const DraggableConstructorElement: React.FC<{
 
 export function BurgerFilling(): React.ReactElement {
   const ingredients =
-    useSelector((state: RootState) => state.constructor?.ingredients) || [];
+    useAppSelector((state: RootState) => state.constructor?.ingredients) || [];
 
   return (
     <div className={styles.container}>

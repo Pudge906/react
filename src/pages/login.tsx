@@ -4,10 +4,10 @@ import {
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { loginUser } from '@services/auth_slice.ts';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 
 import type { RootState } from '@services/store';
 
@@ -26,11 +26,13 @@ export default function Login(): React.ReactElement {
   const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
   const [error, setError] = useState('');
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation<LocationState>();
 
-  const { isAuth } = useSelector<RootState, { isAuth: boolean }>((state) => state.auth);
+  const { isAuth } = useAppSelector<RootState, { isAuth: boolean }>(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     if (isAuth) {

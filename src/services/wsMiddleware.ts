@@ -25,6 +25,13 @@ export const wsMiddleware = (wsUrl: string, isProfile = false): Middleware => {
         socket = new WebSocket(payload!);
       }
 
+      if (type === WS_DISCONNECT) {
+        if (socket) {
+          socket.close();
+          socket = null;
+        }
+      }
+
       if (socket) {
         socket.onopen = () => {
           if (isProfile) {

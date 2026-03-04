@@ -1,36 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// src/services/constructor_slice.ts
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-// ==================== ТИПЫ ====================
-interface Ingredient {
+type Ingredient = {
   _id: string;
-  name: string;
-  type: 'bun' | 'sauce' | 'main';
   price: number;
-  image: string;
-  image_mobile?: string;
-  image_large?: string;
-  proteins?: number;
-  fat?: number;
-  carbohydrates?: number;
-  calories?: number;
-  __v?: number;
-}
+  uniqueId?: string;
+  [key: string]: any;
+};
 
-interface ConstructorIngredient extends Ingredient {
-  uniqueId: string;
-}
-
-interface ConstructorState {
+type ConstructorState = {
   bun: Ingredient | null;
-  ingredients: ConstructorIngredient[];
+  ingredients: Ingredient[];
   total: number;
   count: number;
   _lastAdd: number | null;
-}
+};
 
-// ==================== НАЧАЛЬНОЕ СОСТОЯНИЕ ====================
 const initialState: ConstructorState = {
   bun: null,
   ingredients: [],
@@ -39,27 +26,21 @@ const initialState: ConstructorState = {
   _lastAdd: null,
 };
 
-// ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
 const calculateTotal = (state: ConstructorState): number => {
   const bunPrice = state.bun ? state.bun.price * 2 : 0;
   const ingredientsPrice = state.ingredients.reduce(
-    (sum: number, item: ConstructorIngredient): number => sum + (item.price || 0),
+    (sum, item) => sum + (item.price || 0),
     0
   );
   return bunPrice + ingredientsPrice;
 };
 
-const ensureIngredientsArray = (ingredients: unknown): ConstructorIngredient[] => {
-  return Array.isArray(ingredients) ? ingredients : [];
-};
-
-// ==================== SLICE ====================
 const constructorSlice = createSlice({
   name: 'constructor',
   initialState,
   reducers: {
-    setBun: (state, action: PayloadAction<Ingredient>): ConstructorState => {
-      const newState: ConstructorState = {
+    setBun: (state, action: PayloadAction<Ingredient>) => {
+      const newState = {
         ...state,
         bun: action.payload,
       };
@@ -68,18 +49,23 @@ const constructorSlice = createSlice({
     },
 
     addIngredient: {
-      reducer: (state, action: PayloadAction<ConstructorIngredient>): ConstructorState => {
+      reducer: (state, action: PayloadAction<Ingredient>) => {
         const now = Date.now();
-        
-        // Защита от двойного добавления
         if (state._lastAdd && now - state._lastAdd < 300) {
           return state;
         }
 
-        const currentIngredients = ensureIngredientsArray(state.ingredients);
+        const currentIngredients = Array.isArray(state.ingredients)
+          ? state.ingredients
+          : [];
+
         const newIngredient = action.payload;
 
-        const newState: ConstructorState = {
+        if (!newIngredient.uniqueId) {
+          return state;
+        }
+
+        const newState = {
           ...state,
           ingredients: [...currentIngredients, newIngredient],
           count: state.count + 1,
@@ -89,7 +75,7 @@ const constructorSlice = createSlice({
         newState.total = calculateTotal(newState);
         return newState;
       },
-      prepare: (ingredient: Omit<Ingredient, 'uniqueId'>): { payload: ConstructorIngredient } => {
+      prepare: (ingredient: Omit<Ingredient, 'uniqueId'>) => {
         const timestamp = Date.now();
         const random = Math.random().toString(36).substring(2, 9);
         const uniqueId = `${ingredient._id}-${timestamp}-${random}`;
@@ -98,24 +84,27 @@ const constructorSlice = createSlice({
           payload: {
             ...ingredient,
             uniqueId,
-          } as ConstructorIngredient,
+          },
         };
       },
     },
 
-    removeIngredient: (state, action: PayloadAction<string>): ConstructorState => {
-      const currentIngredients = ensureIngredientsArray(state.ingredients);
+    removeIngredient: (state, action: PayloadAction<string>) => {
+      const currentIngredients = Array.isArray(state.ingredients)
+        ? state.ingredients
+        : [];
+
       const index = currentIngredients.findIndex(
-        (item: ConstructorIngredient): boolean => item.uniqueId === action.payload
+        (item) => item.uniqueId === action.payload
       );
 
       if (index === -1) {
         return state;
       }
 
-      const newState: ConstructorState = {
+      const newState = {
         ...state,
-        ingredients: currentIngredients.filter((_, i: number): boolean => i !== index),
+        ingredients: currentIngredients.filter((_, i) => i !== index),
         count: state.count - 1,
       };
 
@@ -126,11 +115,13 @@ const constructorSlice = createSlice({
     moveIngredient: (
       state,
       action: PayloadAction<{ fromIndex: number; toIndex: number }>
-    ): ConstructorState => {
-      const currentIngredients = ensureIngredientsArray(state.ingredients);
+    ) => {
+      const currentIngredients = Array.isArray(state.ingredients)
+        ? state.ingredients
+        : [];
+
       const { fromIndex, toIndex } = action.payload;
 
-      // Валидация индексов
       if (
         fromIndex < 0 ||
         fromIndex >= currentIngredients.length ||
@@ -151,11 +142,10 @@ const constructorSlice = createSlice({
       };
     },
 
-    clearConstructor: (): ConstructorState => initialState,
+    clearConstructor: () => initialState,
   },
 });
 
-// ==================== EXPORTS ====================
 export const {
   setBun,
   addIngredient,

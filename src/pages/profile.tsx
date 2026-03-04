@@ -5,11 +5,11 @@ import {
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { ProfileLayout } from '@/layouts/ProfileLayout';
 import { getUserData, logoutUser, updateUserData } from '@services/auth_slice.ts';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 
 import type { RootState } from '@services/store';
 
@@ -19,8 +19,8 @@ type FormValues = { name: string; email: string; password: string };
 
 export default function Profile() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { user, isLoading, error } = useSelector<RootState, AuthState>(
+  const dispatch = useAppDispatch();
+  const { user, isLoading, error } = useAppSelector<RootState, AuthState>(
     (state) => state.auth
   );
 

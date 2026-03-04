@@ -1,7 +1,7 @@
 import { CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { openIngredientModal } from '@services/ingredient_detailsSlice.ts';
 
 import DraggableIngredient from '../DraggableIngredient.tsx';
@@ -44,11 +44,11 @@ export function IngredientCards(props: IngredientCardsProps): React.ReactElement
     scrollContainerRef,
   } = props;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const constructorState = useSelector<RootState, ConstructorState>(
+  const constructorState = useAppSelector<RootState, ConstructorState>(
     (state) => state.constructor
   );
 

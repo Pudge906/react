@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// src/services/ingredient_detailsSlice.ts
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 type Ingredient = Record<string, any>;

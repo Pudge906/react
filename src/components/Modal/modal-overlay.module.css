@@ -11,13 +11,12 @@
   background: rgb(0 0 0 / 60%);
 }
 
-.modal {
+.modalContent {
   position: relative;
   box-sizing: border-box;
-  width: min(600px, 90vw);
-  max-height: 90vh;
+  width: 600px;
+  height: 500px;
   padding: 20px;
-  overflow: auto;
   background: #1c1c21;
   border-radius: 16px;
 }

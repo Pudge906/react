@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { wsConnecting } from '@services/order_feed_slice';
 
 import { request } from '../utils/api';
@@ -23,8 +23,8 @@ type Props = {
 export default function FeedOrderDetails({ asPage = false, asModal = false }: Props) {
   const location = useLocation<LocationState>();
   const { number } = useParams<{ number: string }>();
-  const dispatch = useDispatch();
-  const { orders } = useSelector((state: RootState) => state.orderFeed);
+  const dispatch = useAppDispatch(); // ✅ Заменено
+  const { orders } = useAppSelector((state: RootState) => state.orderFeed);
 
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<any | null>(null);

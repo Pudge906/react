@@ -11,11 +11,11 @@ import { wsMiddleware } from './wsMiddleware';
 
 // URL для WebSocket
 const wsUrlAll = 'wss://norma.education-services.ru/orders/all';
-const wsUrlPersonal = 'wss://norma.education-services.ru/orders'; // + ?token=
+const wsUrlPersonal = 'wss://norma.education-services.ru/orders';
 
 // Подключаем мидлвары
-const wsOrdersAllMiddleware = wsMiddleware(wsUrlAll, false); // для общей ленты
-const wsOrdersProfileMiddleware = wsMiddleware(wsUrlPersonal, true); // для профиля
+const wsOrdersAllMiddleware = wsMiddleware(wsUrlAll, false);
+const wsOrdersProfileMiddleware = wsMiddleware(wsUrlPersonal, true);
 
 export const store = configureStore({
   reducer: {
@@ -35,5 +35,7 @@ export const store = configureStore({
   devTools: true,
 });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+// Типы
+export type AppStore = typeof store;
+export type RootState = ReturnType<AppStore['getState']>;
+export type AppDispatch = AppStore['dispatch'];
