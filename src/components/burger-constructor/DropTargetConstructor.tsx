@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 import { useDrop } from 'react-dnd';
-import { useDispatch } from 'react-redux';
 
 import { addIngredient, setBun } from '@services/constructor_slice.ts';
+import { useAppDispatch } from '@services/hooks';
 
 type DropItem = {
   _id: string;
@@ -13,7 +13,7 @@ type DropItem = {
 const DropTargetConstructor: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const lastDropRef = useRef<{ _id: string; time: number } | null>(null);
 
   const [{ isOver, canDrop }, drop] = useDrop<
