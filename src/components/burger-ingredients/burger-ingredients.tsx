@@ -1,6 +1,6 @@
 import { Preloader, Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@services/hooks';
 
 import { IngredientCards } from '@components/burger-ingredients/burger-card/ingredient-cards';
 
@@ -31,7 +31,7 @@ export const BurgerIngredients: React.FC = () => {
     main,
     loading,
     error,
-  } = useSelector((state: { ingredients: IngredientsState }) => state.ingredients);
+  } = useAppSelector((state) => state.ingredients);
 
   const bunRef = useRef<HTMLDivElement>(null);
   const sauceRef = useRef<HTMLDivElement>(null);

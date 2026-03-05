@@ -2,9 +2,8 @@ import {
   CurrencyIcon,
   FormattedDate,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useSelector } from 'react-redux';
 
-import type { RootState } from '@services/store';
+import { useAppSelector } from '@services/hooks';
 
 import type { Order } from '../types/order';
 
@@ -15,7 +14,8 @@ type Props = {
 };
 
 export const OrderCard: React.FC<Props> = ({ order }) => {
-  const { items } = useSelector((state: RootState) => state.ingredients);
+
+  const { items } = useAppSelector((state) => state.ingredients);
 
   const ingredientsMap = new Map(items.map((i) => [i._id, i]));
   const totalPrice = order.ingredients.reduce((sum, id) => {

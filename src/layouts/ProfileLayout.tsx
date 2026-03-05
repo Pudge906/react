@@ -1,4 +1,5 @@
-import { useDispatch } from 'react-redux';
+
+import { useAppDispatch } from '@services/hooks';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 import { logoutUser } from '@services/auth_slice.ts';
@@ -8,7 +9,8 @@ import type { ReactNode } from 'react';
 import styles from '../pages/profile.module.css';
 
 export function ProfileLayout({ children }: { children: ReactNode }) {
-  const dispatch = useDispatch();
+
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleLogout = async () => {

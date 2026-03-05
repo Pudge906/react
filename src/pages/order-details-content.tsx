@@ -1,11 +1,12 @@
 import { CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
-import { useSelector } from 'react-redux';
 
-import type { RootState } from '@services/store';
+import { useAppSelector } from '@services/hooks';
+
+
 
 import styles from './order-details.module.css';
 
-// Вспомогательная функция для форматирования даты как "Вчера, 13:50 i-GMT+3"
+
 const formatRelativeDate = (date: Date): string => {
   const now = new Date();
   const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
@@ -23,8 +24,14 @@ const formatRelativeDate = (date: Date): string => {
   return `${dayStr}, ${hours}:${minutes} ${tz}`;
 };
 
+
+type Props = {
+  order: Order; 
+};
+
 export const OrderDetailsContent: React.FC<Props> = ({ order }) => {
-  const { items } = useSelector((state: RootState) => state.ingredients);
+
+  const { items } = useAppSelector((state) => state.ingredients);
 
   const ingredientsMap = new Map(items.map((i) => [i._id, i]));
   const ingredientsInOrder = order.ingredients

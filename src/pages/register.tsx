@@ -5,7 +5,8 @@ import {
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useAppDispatch } from '@services/hooks';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { registerUser } from '@services/auth_slice.ts';
@@ -26,7 +27,7 @@ export default function Register(): React.ReactElement {
   });
   const [error, setError] = useState('');
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {

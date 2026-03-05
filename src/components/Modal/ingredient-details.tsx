@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@services/hooks'; 
 
 import styles from './ingredient-details.module.css';
 
@@ -16,9 +16,8 @@ type IngredientDetailsState = {
 };
 
 export default function IngredientDetails(): React.ReactElement | null {
-  const currentIngredient = useSelector(
-    (state: { ingredientDetails: IngredientDetailsState }) =>
-      state.ingredientDetails?.currentIngredient
+  const currentIngredient = useAppSelector(
+    (state) => state.ingredientDetails?.currentIngredient
   );
 
   if (!currentIngredient) {
