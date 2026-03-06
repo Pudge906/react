@@ -1,0 +1,56 @@
+.main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  max-height: 38%;
+  padding-left: 0;
+  overflow-y: auto;
+}
+
+.verticalBlock {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.name {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.price_cristal {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.counter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  color: white;
+  font-weight: 400;
+  font-size: 14px;
+  font-family: 'Jet Brains Mono', sans-serif;
+  line-height: 1;
+  background-color: #4c4cff;
+  border-radius: 50%;
+}

@@ -1,0 +1,42 @@
+.container {
+  display: flex;
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem 2rem;
+  color: white;
+  position: relative;
+}
+
+/* Добавляем .nav — для левой панели */
+.nav {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.navItem {
+  display: block;
+  padding: 0.75rem 0;
+  color: #fff;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.navItem:hover {
+  color: #ccc;
+}
+
+.navItem_active {
+  color: #fff;
+  font-weight: 500;
+}
+
+.hint {
+  margin-top: 80px;
+  padding-top: 24px;
+  color: #6e6c6c;
+  text-align: left;
+}

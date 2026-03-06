@@ -1,0 +1,57 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  text-align: center;
+}
+
+.title {
+  align-self: flex-start;
+  width: 100%;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.image {
+  width: 380px;
+  height: 280px;
+  object-fit: contain;
+  margin-bottom: 16px;
+}
+
+.name {
+  margin-bottom: 32px;
+  font-weight: 700;
+  font-size: 24px;
+}
+
+.nutrition {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 0;
+  padding: 0 10px;
+}
+
+.nutritionItem {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.nutritionValue {
+  font-weight: 400;
+  font-size: 22px;
+}
+
+.nutritionLabel {
+  color: #8585ad;
+  font-size: 14px;
+  white-space: nowrap;
+}

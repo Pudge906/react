@@ -1,0 +1,72 @@
+/* src/pages/login.module.css */
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  padding: 2rem 1rem;
+ 
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  background: #1c1c21;
+  border-radius: 40px;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 50%);
+}
+
+.title {
+  margin: 0;
+  padding: 0;
+  padding-bottom: 24px;
+  color: white;
+  font-weight: 500;
+  font-size: 34px;
+  text-align: center;
+}
+
+.error {
+  margin-bottom: 1rem;
+  color: #f55;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px; /* 24px × 6 от последнего поля до кнопки */
+}
+
+.links {
+  margin-top: 80px; /* 80px × 20 от кнопки до ссылок */
+  color: #aaa;
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.links a {
+  margin-left: 0.25rem;
+  color: #4d4dff;
+  font-weight: 500;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.links a:hover {
+  color: #c684ff;
+}
