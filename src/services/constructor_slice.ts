@@ -1,6 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+// src/services/constructor_slice.ts
+import type { PayloadAction } from '@reduxjs/toolkit';
+
+type Ingredient = {
+  _id: string;
+  price: number;
+  uniqueId?: string;
+  [key: string]: any;
+};
+
+type ConstructorState = {
+  bun: Ingredient | null;
+  ingredients: Ingredient[];
+  total: number;
+  count: number;
+  _lastAdd: number | null;
+};
+
+const initialState: ConstructorState = {
   bun: null,
   ingredients: [],
   total: 0,
@@ -8,20 +26,20 @@ const initialState = {
   _lastAdd: null,
 };
 
-const calculateTotal = (state) => {
+const calculateTotal = (state: ConstructorState): number => {
   const bunPrice = state.bun ? state.bun.price * 2 : 0;
-  const ingredientsPrice = (state.ingredients || []).reduce(
+  const ingredientsPrice = state.ingredients.reduce(
     (sum, item) => sum + (item.price || 0),
     0
   );
   return bunPrice + ingredientsPrice;
 };
 
-const constructor_slice = createSlice({
+const constructorSlice = createSlice({
   name: 'constructor',
   initialState,
   reducers: {
-    setBun: (state, action) => {
+    setBun: (state, action: PayloadAction<Ingredient>) => {
       const newState = {
         ...state,
         bun: action.payload,
@@ -31,7 +49,7 @@ const constructor_slice = createSlice({
     },
 
     addIngredient: {
-      reducer: (state, action) => {
+      reducer: (state, action: PayloadAction<Ingredient>) => {
         const now = Date.now();
         if (state._lastAdd && now - state._lastAdd < 300) {
           return state;
@@ -57,7 +75,7 @@ const constructor_slice = createSlice({
         newState.total = calculateTotal(newState);
         return newState;
       },
-      prepare: (ingredient) => {
+      prepare: (ingredient: Omit<Ingredient, 'uniqueId'>) => {
         const timestamp = Date.now();
         const random = Math.random().toString(36).substring(2, 9);
         const uniqueId = `${ingredient._id}-${timestamp}-${random}`;
@@ -71,7 +89,7 @@ const constructor_slice = createSlice({
       },
     },
 
-    removeIngredient: (state, action) => {
+    removeIngredient: (state, action: PayloadAction<string>) => {
       const currentIngredients = Array.isArray(state.ingredients)
         ? state.ingredients
         : [];
@@ -94,7 +112,10 @@ const constructor_slice = createSlice({
       return newState;
     },
 
-    moveIngredient: (state, action) => {
+    moveIngredient: (
+      state,
+      action: PayloadAction<{ fromIndex: number; toIndex: number }>
+    ) => {
       const currentIngredients = Array.isArray(state.ingredients)
         ? state.ingredients
         : [];
@@ -131,6 +152,6 @@ export const {
   removeIngredient,
   moveIngredient,
   clearConstructor,
-} = constructor_slice.actions;
+} = constructorSlice.actions;
 
-export default constructor_slice.reducer;
+export default constructorSlice.reducer;

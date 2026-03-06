@@ -5,6 +5,13 @@
   margin: 0 auto;
   padding: 4rem 2rem 2rem;
   color: white;
+  position: relative;
+}
+
+/* Добавляем .nav — для левой панели */
+.nav {
+  width: 250px;
+  flex-shrink: 0;
 }
 
 .navItem {

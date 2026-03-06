@@ -18,23 +18,17 @@ export default function ResetPassword(): React.ReactElement | null {
   const location = useLocation<LocationState>();
   const navigate = useNavigate();
 
-  // ВСЕ хуки должны быть здесь, перед любыми условиями
+  if (!location.state?.fromForgot) {
+    navigate('/forgot-password', { replace: true });
+    return null;
+  }
+
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
-  // Убрали неиспользуемую переменную shouldRedirect
-  // const [shouldRedirect, setShouldRedirect] = useState(false);
-
-  // Проверяем состояние location в useEffect
-  useEffect(() => {
-    if (!location.state?.fromForgot) {
-      navigate('/forgot-password', { replace: true });
-      return;
-    }
-  }, [location.state?.fromForgot, navigate]);
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('resetEmail');
@@ -43,7 +37,7 @@ export default function ResetPassword(): React.ReactElement | null {
     }
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -76,22 +70,12 @@ export default function ResetPassword(): React.ReactElement | null {
       setTimeout(() => {
         navigate('/login');
       }, 3000);
-    } catch (err: unknown) {
-      // Заменен any на unknown
-      if (err instanceof Error) {
-        setError(err.message || 'Неверный код или пароль');
-      } else {
-        setError('Неверный код или пароль');
-      }
+    } catch (err: any) {
+      setError(err.message || 'Неверный код или пароль');
     } finally {
       setIsLoading(false);
     }
   };
-
-  // Если нет доступа к странице, можно показать загрузку или null
-  if (!location.state?.fromForgot) {
-    return null; // или <Loader /> или что-то подобное
-  }
 
   if (success) {
     return (

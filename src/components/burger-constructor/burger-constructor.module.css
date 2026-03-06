@@ -1,12 +1,28 @@
-.burger_constructor {
-  display: flex;
+ .burger_constructor {
+ display: flex;
   flex-direction: column;
+  gap: 5%;
   width: 600px;
-  padding-bottom: 20px;
-  color: var(--text-primary-color);
 }
 
 .price_button {
+
+  position: sticky;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-radius: 8px;
+
+}
+
+.largeIcon {
+  width: 24px;
+  height: 24px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -21,7 +37,7 @@
 .slice {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 15px;
 }
 
 .bunRow {
@@ -53,24 +69,20 @@
   width: 100%;
   min-width: 488px;
   height: 90px;
-  padding: 36px 10px;
+  padding: 16px 24px;
   color: #8585ad;
   font-size: 16px;
   font-family: 'Jet Brains Mono', sans-serif;
   line-height: 24px;
   text-align: center;
   background-color: #1c1c21;
+  border: 2px dashed #8585ad;
+  border-radius: 40px;
+  transition: all 0.3s ease;
 }
 
-/* Верхний плейсхолдер (для верхней булки) */
+.emptyBunPlaceholder:hover {
+  color: #f2f2f3;
+  border-color: #4c4cff;
 
-.topBunPlaceholder {
-  border-radius: 80px 80px 30px 30px; /* Скругление сверху больше */
-}
-
-/* Нижний плейсхолдер (для нижней булки) */
-
-.bottomBunPlaceholder {
-  margin-top: 10px;
-  border-radius: 30px 30px 80px 80px; /* Скругление снизу больше */
 }

@@ -1,9 +1,13 @@
+/* src/pages/register.module.css */
+
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 70vh;
+
 }
+
 
 .title {
   margin: 0;
@@ -15,9 +19,12 @@
   text-align: center;
 }
 
-.formContainer {
-  width: 100%;
-  max-width: 480px;
+.error {
+  margin: 0;
+  padding: 0;
+  color: #f55;
+  font-size: 16px;
+  text-align: center;
 }
 
 .inputGroup {
@@ -44,9 +51,7 @@
   border-radius: 40px;
   box-shadow: 0 4px 16px rgb(162 89 255 / 40%);
   cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .loginButton:hover {

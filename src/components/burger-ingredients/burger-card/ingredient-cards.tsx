@@ -1,8 +1,8 @@
 import { CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { openIngredientModal } from '@services/ingredient_detailsSlice';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
+import { openIngredientModal } from '@services/ingredient_detailsSlice.ts';
 
 import DraggableIngredient from '../DraggableIngredient.tsx';
 
@@ -44,11 +44,11 @@ export function IngredientCards(props: IngredientCardsProps): React.ReactElement
     scrollContainerRef,
   } = props;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const constructorState = useSelector<RootState, ConstructorState>(
+  const constructorState = useAppSelector<RootState, ConstructorState>(
     (state) => state.constructor
   );
 
@@ -67,8 +67,7 @@ export function IngredientCards(props: IngredientCardsProps): React.ReactElement
     return ingredients.filter((item) => item?._id === ingredient._id).length;
   };
 
-  // Добавлен тип возвращаемого значения
-  const handleIngredientClick = (ingredient: Ingredient): void => {
+  const handleIngredientClick = (ingredient: Ingredient) => {
     dispatch(openIngredientModal(ingredient));
 
     sessionStorage.setItem('ingredientModalData', JSON.stringify(ingredient));
@@ -87,7 +86,13 @@ export function IngredientCards(props: IngredientCardsProps): React.ReactElement
           <div className={style.verticalBlock}>
             {safeBunItems.map((bun) => (
               <DraggableIngredient key={bun._id} ingredient={bun}>
-                <li className={style.column} onClick={() => handleIngredientClick(bun)}>
+                {/* ✅ ДОБАВЛЕНО: data-testid и data-type для Cypress */}
+                <li
+                  className={style.column}
+                  onClick={() => handleIngredientClick(bun)}
+                  data-testid="ingredient-card"
+                  data-type={bun.type}
+                >
                   {getIngredientCount(bun) > 0 && (
                     <div className={style.counter}>{getIngredientCount(bun)}</div>
                   )}
@@ -112,9 +117,12 @@ export function IngredientCards(props: IngredientCardsProps): React.ReactElement
           <div className={style.verticalBlock}>
             {safeSauceItems.map((sauce) => (
               <DraggableIngredient key={sauce._id} ingredient={sauce}>
+                {/* ✅ ДОБАВЛЕНО: data-testid и data-type для Cypress */}
                 <li
                   className={style.column}
                   onClick={() => handleIngredientClick(sauce)}
+                  data-testid="ingredient-card"
+                  data-type={sauce.type}
                 >
                   {getIngredientCount(sauce) > 0 && (
                     <div className={style.counter}>{getIngredientCount(sauce)}</div>
@@ -140,7 +148,13 @@ export function IngredientCards(props: IngredientCardsProps): React.ReactElement
           <div className={style.verticalBlock}>
             {safeMainItems.map((main) => (
               <DraggableIngredient key={main._id} ingredient={main}>
-                <li className={style.column} onClick={() => handleIngredientClick(main)}>
+                {/* ✅ ДОБАВЛЕНО: data-testid и data-type для Cypress */}
+                <li
+                  className={style.column}
+                  onClick={() => handleIngredientClick(main)}
+                  data-testid="ingredient-card"
+                  data-type={main.type}
+                >
                   {getIngredientCount(main) > 0 && (
                     <div className={style.counter}>{getIngredientCount(main)}</div>
                   )}

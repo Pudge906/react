@@ -3,11 +3,13 @@ import {
   ConstructorElement,
   CurrencyIcon,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { BurgerFilling } from '@components/burger-constructor/burger-filling/burger-filling';
-import { createOrder } from '@services/order_slice';
+import {
+  BurgerFilling
+} from '@components/burger-constructor/burger-filling/burger-filling';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
+import { createOrder } from '@services/order_slice.ts';
 
 import DropTargetConstructor from './DropTargetConstructor.tsx';
 
@@ -46,13 +48,13 @@ type ConstructorState = {
 };
 
 export const BurgerConstructor: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const constructorState = useSelector<RootState, ConstructorState>(
+  const constructorState = useAppSelector<RootState, ConstructorState>(
     (state) => state.constructor || {}
   );
-  const orderState = useSelector<RootState, OrderState>((state) => state.order || {});
-  const authState = useSelector<RootState, AuthState>((state) => state.auth || {});
+  const orderState = useAppSelector<RootState, OrderState>((state) => state.order || {});
+  const authState = useAppSelector<RootState, AuthState>((state) => state.auth || {});
 
   const bun = constructorState.bun || null;
   const ingredients = constructorState.ingredients || [];
@@ -62,8 +64,7 @@ export const BurgerConstructor: React.FC = () => {
   const { isAuth } = authState;
   const canPlaceOrder = !!bun && ingredients.length > 0;
 
-  // Добавлен тип возвращаемого значения
-  const handleCreateOrder = (): void => {
+  const handleCreateOrder = () => {
     if (!bun) {
       alert('Добавьте булку!');
       return;
@@ -97,16 +98,13 @@ export const BurgerConstructor: React.FC = () => {
                   thumbnail={bun.image}
                 />
               ) : (
-                <div
-                  className={`${styles.emptyBunPlaceholder} ${styles.topBunPlaceholder}`}
-                >
-                  Выберите бургер
-                </div>
+                <div className={styles.emptyBunPlaceholder}>Перетащите булку сюда</div>
               )}
             </div>
           </div>
 
-          <div className={styles.scrollableArea}>
+          {/* ✅ ДОБАВЛЕНО: data-testid для зоны начинок */}
+          <div className={styles.scrollableArea} data-testid="constructor-ingredients">
             <BurgerFilling />
           </div>
 
@@ -122,11 +120,7 @@ export const BurgerConstructor: React.FC = () => {
                   thumbnail={bun.image}
                 />
               ) : (
-                <div
-                  className={`${styles.emptyBunPlaceholder} ${styles.bottomBunPlaceholder}`}
-                >
-                  Выберите бургер
-                </div>
+                <div className={styles.emptyBunPlaceholder}>Перетащите булку сюда</div>
               )}
             </div>
           </div>
@@ -137,12 +131,14 @@ export const BurgerConstructor: React.FC = () => {
         <div className="text text_type_digits-medium">
           {total} <CurrencyIcon type="primary" className={styles.largeIcon} />
         </div>
+        {/* ✅ ДОБАВЛЕНО: data-testid для кнопки заказа */}
         <Button
           htmlType="button"
           type="primary"
           size="large"
           onClick={handleCreateOrder}
           disabled={!canPlaceOrder || orderLoading}
+          data-testid="order-button"
         >
           {orderLoading ? 'Оформляем...' : 'Оформить заказ'}
         </Button>

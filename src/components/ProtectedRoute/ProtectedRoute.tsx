@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@services/hooks';
 import { Navigate, useLocation } from 'react-router-dom';
 
 type AuthState = {
@@ -18,8 +18,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const location = useLocation();
 
-  const { isAuth, isLoading, isCheckAuthStarted } = useSelector(
-    (state: { auth: AuthState }) => state.auth
+  const { isAuth, isLoading, isCheckAuthStarted } = useAppSelector(
+    (state) => state.auth
   );
 
   if (onlyUnAuth && isAuth) {

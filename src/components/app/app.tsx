@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import { AppHeader } from '@components/app-header/app-header.tsx';
@@ -9,17 +8,22 @@ import { BurgerConstructor } from '@components/burger-constructor/burger-constru
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients.tsx';
 import ModalRoot from '@components/Modal/modal_root.tsx';
 import { OnlyAuth, OnlyUnAuth } from '@components/ProtectedRoute/ProtectedRoute.tsx';
+import FeedOrderDetails from '@pages/feed-order-details.tsx';
+import Feed from '@pages/feed.tsx';
 import Forgot_password from '@pages/forgot_password.tsx';
 import Ingredient_page from '@pages/ingredient_page.tsx';
 import Login from '@pages/login.tsx';
 import Not_found from '@pages/not_found.tsx';
+import ProfileOrderDetails from '@pages/profile-order-details.tsx';
+import ProfileOrders from '@pages/profile-orders.tsx';
 import Profile from '@pages/profile.tsx';
 import Register from '@pages/register.tsx';
 import Reset_password from '@pages/reset_password.tsx';
-import { checkAuth } from '@services/auth_slice';
-import { fetchIngredients } from '@services/ingredients_slice';
+import { checkAuth } from '@services/auth_slice.ts';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
+import { fetchIngredients } from '@services/ingredients_slice.ts';
 
-import type { AppDispatch, RootState } from '@services/store';
+import type { RootState } from '@services/store';
 
 import styles from './app.module.css';
 
@@ -33,10 +37,10 @@ type IngredientState = {
 };
 
 const AppWithRouting: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const location = useLocation<LocationState>();
 
-  const { loading, error } = useSelector<RootState, IngredientState>(
+  const { loading, error } = useAppSelector<RootState, IngredientState>(
     (state) => state.ingredients
   );
 
@@ -87,6 +91,9 @@ const AppWithRouting: React.FC = () => {
         }
       />
 
+      <Route path="/feed" element={<Feed />} />
+      <Route path="/feed/:number" element={<FeedOrderDetails />} />
+
       <Route
         path="/login"
         element={
@@ -126,7 +133,8 @@ const AppWithRouting: React.FC = () => {
           <OnlyAuth>
             <Routes>
               <Route index element={<Profile />} />
-              <Route path="orders" element={<div>История заказов (в разработке)</div>} />
+              <Route path="orders" element={<ProfileOrders />} />
+              <Route path="orders/:number" element={<ProfileOrderDetails />} />
             </Routes>
           </OnlyAuth>
         }
@@ -141,7 +149,11 @@ const AppWithRouting: React.FC = () => {
   const modalRoutes = (
     <Routes>
       {location.state?.background && (
-        <Route path="/ingredients/:id" element={<Ingredient_page asModal={true} />} />
+        <>
+          <Route path="/ingredients/:id" element={<Ingredient_page asModal={true} />} />
+          <Route path="/feed/:number" element={<FeedOrderDetails />} />
+          <Route path="/profile/orders/:number" element={<ProfileOrderDetails />} />
+        </>
       )}
     </Routes>
   );

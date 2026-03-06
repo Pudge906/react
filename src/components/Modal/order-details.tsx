@@ -1,4 +1,5 @@
-import { useSelector } from 'react-redux';
+
+import { useAppSelector } from '@services/hooks';
 
 import styles from './order-details.module.css';
 
@@ -9,8 +10,9 @@ type OrderState = {
 };
 
 export default function OrderDetails(): React.ReactElement {
-  const { orderNumber, loading, error } = useSelector(
-    (state: { order: OrderState }) => state.order
+
+  const { orderNumber, loading, error } = useAppSelector(
+    (state) => state.order
   );
 
   if (loading) {
@@ -46,7 +48,7 @@ export default function OrderDetails(): React.ReactElement {
         Ваш заказ начали готовить
       </div>
       <div
-        className={`text text_type_main-default text_color_inactive ${styles.message}`}
+        className={`text text_type_main-default text_color_inactive ${styles.waitMessage}`}
       >
         Дождитесь готовности на орбитальной станции
       </div>

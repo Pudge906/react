@@ -4,9 +4,9 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { moveIngredient, removeIngredient } from '@services/constructor_slice';
+import { moveIngredient, removeIngredient } from '@services/constructor_slice.ts';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 
 import type { RootState } from '@services/store';
 
@@ -24,42 +24,38 @@ type DraggableItem = {
   id: string;
 };
 
-// Убрали пустой объектный тип
-// type DropResult = {};
+type DropResult = {};
 
 const DraggableConstructorElement: React.FC<{
   ingredient: Ingredient;
   index: number;
 }> = ({ ingredient, index }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const ref = useRef<HTMLLIElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const [{ isDragging }, drag] = useDrag<
     DraggableItem,
-    unknown, // Заменили DropResult на unknown
+    DropResult,
     { isDragging: boolean }
   >({
     type: 'constructor-ingredient',
-    item: (): DraggableItem => {
-      // Добавили тип возвращаемого значения
+    item: () => {
       return { index, id: ingredient.uniqueId };
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    end: (item, monitor): void => {
-      // Добавили тип возвращаемого значения
+    end: (item, monitor) => {
       const didDrop = monitor.didDrop();
       if (!didDrop) {
-        /* Пустой блок с комментарием */
       }
     },
   });
 
   const [{ handlerId, isOver }, drop] = useDrop<
     DraggableItem,
-    unknown, // Заменили DropResult на unknown
+    DropResult,
     { handlerId: string | symbol | null; isOver: boolean; canDrop: boolean }
   >({
     accept: 'constructor-ingredient',
@@ -68,8 +64,7 @@ const DraggableConstructorElement: React.FC<{
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
     }),
-    hover: (draggedItem, monitor): void => {
-      // Добавили тип возвращаемого значения
+    hover: (draggedItem, monitor) => {
       if (!ref.current) {
         return;
       }
@@ -108,16 +103,14 @@ const DraggableConstructorElement: React.FC<{
 
       draggedItem.index = hoverIndex;
     },
-    drop: (): void => {
-      // Добавили тип возвращаемого значения
+    drop: () => {
       setIsHovered(false);
     },
   });
 
   drag(drop(ref));
 
-  const handleRemove = (): void => {
-    // Добавили тип возвращаемого значения
+  const handleRemove = () => {
     dispatch(removeIngredient(ingredient.uniqueId));
   };
 
@@ -155,7 +148,7 @@ const DraggableConstructorElement: React.FC<{
 
 export function BurgerFilling(): React.ReactElement {
   const ingredients =
-    useSelector((state: RootState) => state.constructor?.ingredients) || [];
+    useAppSelector((state: RootState) => state.constructor?.ingredients) || [];
 
   return (
     <div className={styles.container}>

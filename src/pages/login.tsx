@@ -4,10 +4,10 @@ import {
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-import { loginUser } from '@services/auth_slice';
+import { loginUser } from '@services/auth_slice.ts';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 
 import type { RootState } from '@services/store';
 
@@ -26,11 +26,13 @@ export default function Login(): React.ReactElement {
   const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
   const [error, setError] = useState('');
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation<LocationState>();
 
-  const { isAuth } = useSelector<RootState, { isAuth: boolean }>((state) => state.auth);
+  const { isAuth } = useAppSelector<RootState, { isAuth: boolean }>(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     if (isAuth) {
@@ -40,26 +42,19 @@ export default function Login(): React.ReactElement {
 
   const from = location.state?.from || '/';
 
-  // Добавлен тип возвращаемого значения
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
       await dispatch(loginUser(formData)).unwrap();
 
       navigate(from, { replace: true });
-    } catch (err: unknown) {
-      // Заменен any на unknown
-      if (err instanceof Error) {
-        setError(err.message || 'Неверный email или пароль');
-      } else {
-        setError('Неверный email или пароль');
-      }
+    } catch (err: any) {
+      setError(err.message || 'Неверный email или пароль');
     }
   };
 
-  // Добавлен тип возвращаемого значения
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
