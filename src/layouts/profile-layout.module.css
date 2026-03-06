@@ -5,10 +5,9 @@
   margin: 0 auto;
   padding: 4rem 2rem 2rem;
   color: white;
-  position: relative;
+  min-height: 100vh;
 }
 
-/* Добавляем .nav — для левой панели */
 .nav {
   width: 250px;
   flex-shrink: 0;
@@ -39,4 +38,26 @@
   padding-top: 24px;
   color: #6e6c6c;
   text-align: left;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 80px);
+  padding-right: 4px;
+
+  scrollbar-color: #101009 transparent;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: #101009;
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: transparent;
 }

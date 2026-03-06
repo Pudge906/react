@@ -11,26 +11,14 @@ type ModalProps = {
 
 export default function Modal({ children, onClose }: ModalProps): React.ReactElement {
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
+    const handleEsc = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', handleEsc);
-
-    return (): void => {
-      document.removeEventListener('keydown', handleEsc);
-    };
+    return () => document.removeEventListener('keydown', handleEsc);
   }, [onClose]);
-
-  const handleModalClick = (e: React.MouseEvent<HTMLDivElement>): void => {
-    e.stopPropagation();
-  };
 
   return (
     <ModalOverlay onClose={onClose}>
-      <div className={styles.modal} onClick={handleModalClick}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <button className={styles.closeButton} onClick={onClose}>
           ×
         </button>

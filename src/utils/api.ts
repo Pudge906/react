@@ -1,3 +1,4 @@
+// src/utils/api.ts
 export const BASE_URL = 'https://norma.education-services.ru/api';
 
 type User = {
@@ -5,8 +6,7 @@ type User = {
   email: string;
 };
 
-// Убрали неиспользуемый параметр T или добавили префикс _
-type ApiResponse<_T = unknown> = {
+type ApiResponse<T = unknown> = {
   success: boolean;
   message?: string;
   [key: string]: unknown;
@@ -70,9 +70,7 @@ export const request = async <T>(
 };
 
 export const authApi = {
-  login: (
-    data: LoginData
-  ): Promise<ApiResponse<{ user: User; accessToken: string; refreshToken: string }>> =>
+  login: (data: LoginData) =>
     request<ApiResponse<{ user: User; accessToken: string; refreshToken: string }>>(
       '/auth/login',
       {
@@ -80,10 +78,7 @@ export const authApi = {
         body: JSON.stringify(data),
       }
     ),
-
-  register: (
-    data: RegisterData
-  ): Promise<ApiResponse<{ user: User; accessToken: string; refreshToken: string }>> =>
+  register: (data: RegisterData) =>
     request<ApiResponse<{ user: User; accessToken: string; refreshToken: string }>>(
       '/auth/register',
       {
@@ -91,31 +86,25 @@ export const authApi = {
         body: JSON.stringify(data),
       }
     ),
-
-  logout: (data: LogoutData): Promise<ApiResponse> =>
+  logout: (LogoutData) =>
     request<ApiResponse>('/auth/logout', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  refreshToken: (
-    data: RefreshTokenData
-  ): Promise<ApiResponse<{ accessToken: string; refreshToken: string }>> =>
+  refreshToken: (RefreshTokenData) =>
     request<ApiResponse<{ accessToken: string; refreshToken: string }>>('/auth/token', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  getUser: (token?: string): Promise<ApiResponse<{ user: User }>> =>
+  getUser: (token?: string) =>
     request<ApiResponse<{ user: User }>>('/auth/user', {
       method: 'GET',
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      headers: token ? { Authorization: token } : {},
     }),
-
-  updateUser: (data: UserData, token?: string): Promise<ApiResponse<{ user: User }>> =>
+  updateUser: (data: UserData, token?: string) =>
     request<ApiResponse<{ user: User }>>('/auth/user', {
       method: 'PATCH',
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      headers: token ? { Authorization: token } : {},
       body: JSON.stringify(data),
     }),
 };

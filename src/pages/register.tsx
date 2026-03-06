@@ -5,10 +5,11 @@ import {
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useAppDispatch } from '@services/hooks';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { registerUser } from '@services/auth_slice';
+import { registerUser } from '@services/auth_slice.ts';
 
 import styles from './register.module.css';
 
@@ -26,28 +27,21 @@ export default function Register(): React.ReactElement {
   });
   const [error, setError] = useState('');
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // Добавлен тип возвращаемого значения
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
       await dispatch(registerUser(formData)).unwrap();
       navigate('/');
-    } catch (err: unknown) {
-      // Заменен any на unknown
-      if (err instanceof Error) {
-        setError(err.message || 'Ошибка регистрации');
-      } else {
-        setError('Ошибка регистрации');
-      }
+    } catch (err: any) {
+      setError(err.message || 'Ошибка регистрации');
     }
   };
 
-  // Добавлен тип возвращаемого значения
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };

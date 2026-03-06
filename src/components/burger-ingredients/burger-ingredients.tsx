@@ -1,6 +1,6 @@
 import { Preloader, Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@services/hooks';
 
 import { IngredientCards } from '@components/burger-ingredients/burger-card/ingredient-cards';
 
@@ -31,7 +31,7 @@ export const BurgerIngredients: React.FC = () => {
     main,
     loading,
     error,
-  } = useSelector((state: { ingredients: IngredientsState }) => state.ingredients);
+  } = useAppSelector((state) => state.ingredients);
 
   const bunRef = useRef<HTMLDivElement>(null);
   const sauceRef = useRef<HTMLDivElement>(null);
@@ -40,16 +40,11 @@ export const BurgerIngredients: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'bun' | 'sauce' | 'main'>('bun');
 
-  useEffect((): (() => void) => {
+  useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container) {
-      // Вместо пустой функции возвращаем undefined или функцию без тела
-      return () => {
-        /* cleanup не требуется, т.к. container не существует */
-      };
-    }
+    if (!container) return;
 
-    const handleScroll = (): void => {
+    const handleScroll = () => {
       const containerRect = container.getBoundingClientRect();
       const containerTop = containerRect.top;
 
@@ -62,7 +57,7 @@ export const BurgerIngredients: React.FC = () => {
       let closestSection: 'bun' | 'sauce' | 'main' | null = null;
       let minDistance = Infinity;
 
-      sections.forEach((section): void => {
+      sections.forEach((section) => {
         if (section.ref.current) {
           const sectionElement = section.ref.current;
           const sectionRect = sectionElement.getBoundingClientRect();
@@ -88,7 +83,7 @@ export const BurgerIngredients: React.FC = () => {
 
     handleScroll();
 
-    return (): void => {
+    return () => {
       container.removeEventListener('scroll', handleScroll);
     };
   }, [activeTab]);
@@ -96,7 +91,7 @@ export const BurgerIngredients: React.FC = () => {
   const scrollToSection = (
     sectionRef: React.RefObject<HTMLDivElement>,
     tabValue: 'bun' | 'sauce' | 'main'
-  ): void => {
+  ) => {
     setActiveTab(tabValue);
     if (sectionRef.current && scrollContainerRef.current) {
       const sectionTop = sectionRef.current.offsetTop;
@@ -107,18 +102,6 @@ export const BurgerIngredients: React.FC = () => {
         behavior: 'smooth',
       });
     }
-  };
-
-  const handleBunClick = (): void => {
-    scrollToSection(bunRef, 'bun');
-  };
-
-  const handleSauceClick = (): void => {
-    scrollToSection(sauceRef, 'sauce');
-  };
-
-  const handleMainClick = (): void => {
-    scrollToSection(mainRef, 'main');
   };
 
   if (loading) {
@@ -142,13 +125,25 @@ export const BurgerIngredients: React.FC = () => {
       <section className={styles.burger_ingredients}>
         <nav>
           <ul className={styles.menu}>
-            <Tab value="bun" active={activeTab === 'bun'} onClick={handleBunClick}>
+            <Tab
+              value="bun"
+              active={activeTab === 'bun'}
+              onClick={() => scrollToSection(bunRef, 'bun')}
+            >
               Булки
             </Tab>
-            <Tab active={activeTab === 'sauce'} value="sauce" onClick={handleSauceClick}>
+            <Tab
+              active={activeTab === 'sauce'}
+              value="sauce"
+              onClick={() => scrollToSection(sauceRef, 'sauce')}
+            >
               Соусы
             </Tab>
-            <Tab active={activeTab === 'main'} value="main" onClick={handleMainClick}>
+            <Tab
+              active={activeTab === 'main'}
+              value="main"
+              onClick={() => scrollToSection(mainRef, 'main')}
+            >
               Начинки
             </Tab>
           </ul>

@@ -20,6 +20,7 @@
   font-size: 3.5rem;
   background: linear-gradient(90deg, #8a2be2, #6a1b9a);
   background-clip: text;
+  background-clip: text;
 }
 
 .message {

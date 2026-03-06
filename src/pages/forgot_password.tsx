@@ -6,8 +6,7 @@ import { request } from '@utils/api.ts';
 
 import styles from './forgot_password.module.css';
 
-// Убрали неиспользуемый тип или добавили префикс _
-type _RequestState = {
+type RequestState = {
   fromForgot?: boolean;
 };
 
@@ -16,8 +15,7 @@ export default function ForgotPassword(): React.ReactElement {
   const [requestSent, setRequestSent] = useState(false);
   const [error, setError] = useState('');
 
-  // Добавлен тип возвращаемого значения
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -28,13 +26,8 @@ export default function ForgotPassword(): React.ReactElement {
       });
 
       setRequestSent(true);
-    } catch (err: unknown) {
-      // Заменен any на unknown
-      if (err instanceof Error) {
-        setError(err.message || 'Ошибка сервера');
-      } else {
-        setError('Ошибка сервера');
-      }
+    } catch (err: any) {
+      setError(err.message || 'Ошибка сервера');
     }
   };
 

@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 import {
   closeIngredientModal,
   openIngredientModal,
-} from '@services/ingredient_detailsSlice';
-import { closeOrderModal } from '@services/order_slice';
+} from '@services/ingredient_detailsSlice.ts';
+import { closeOrderModal } from '@services/order_slice.ts';
 
 import IngredientDetails from './ingredient-details';
 import Modal from './modal';
@@ -19,14 +19,14 @@ type LocationState = {
 };
 
 export default function ModalRoot(): React.ReactElement | null {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation<LocationState>();
 
-  const { currentIngredient, isModalOpen: isIngredientModalOpen } = useSelector(
+  const { currentIngredient, isModalOpen: isIngredientModalOpen } = useAppSelector(
     (state: RootState) => state.ingredientDetails
   );
-  const { isModalOpen: isOrderModalOpen } = useSelector(
+  const { isModalOpen: isOrderModalOpen } = useAppSelector(
     (state: RootState) => state.order
   );
 
