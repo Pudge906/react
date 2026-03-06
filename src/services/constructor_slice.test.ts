@@ -10,6 +10,14 @@ import constructorReducer, {
   setBun,
 } from './constructor_slice';
 
+const initialState = {
+  bun: null,
+  ingredients: [],
+  total: 0,
+  count: 0,
+  _lastAdd: null,
+};
+
 import type { ConstructorState, Ingredient } from './constructor_slice';
 
 describe('Constructor Slice', () => {

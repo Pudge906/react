@@ -142,7 +142,13 @@ const constructorSlice = createSlice({
       };
     },
 
-    clearConstructor: () => initialState,
+   clearConstructor: () => ({
+  bun: null,
+  ingredients: [],
+  total: 0,
+  count: 0,
+  _lastAdd: null,
+}),
   },
 });
 
@@ -155,3 +161,4 @@ export const {
 } = constructorSlice.actions;
 
 export default constructorSlice.reducer;
+export { initialState };
