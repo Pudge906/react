@@ -36,3 +36,4 @@
 		'@utils': path.resolve(__dirname, './src/utils'),
 	},
 ```
+ссылка https://Pudge906.github.io/react/

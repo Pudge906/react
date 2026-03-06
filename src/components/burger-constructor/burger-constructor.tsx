@@ -5,7 +5,9 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { useNavigate } from 'react-router-dom';
 
-import { BurgerFilling } from '@components/burger-constructor/burger-filling/burger-filling';
+import {
+  BurgerFilling
+} from '@components/burger-constructor/burger-filling/burger-filling';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { createOrder } from '@services/order_slice.ts';
 
@@ -101,7 +103,8 @@ export const BurgerConstructor: React.FC = () => {
             </div>
           </div>
 
-          <div className={styles.scrollableArea}>
+          {/* ✅ ДОБАВЛЕНО: data-testid для зоны начинок */}
+          <div className={styles.scrollableArea} data-testid="constructor-ingredients">
             <BurgerFilling />
           </div>
 
@@ -128,12 +131,14 @@ export const BurgerConstructor: React.FC = () => {
         <div className="text text_type_digits-medium">
           {total} <CurrencyIcon type="primary" className={styles.largeIcon} />
         </div>
+        {/* ✅ ДОБАВЛЕНО: data-testid для кнопки заказа */}
         <Button
           htmlType="button"
           type="primary"
           size="large"
           onClick={handleCreateOrder}
           disabled={!canPlaceOrder || orderLoading}
+          data-testid="order-button"
         >
           {orderLoading ? 'Оформляем...' : 'Оформить заказ'}
         </Button>
