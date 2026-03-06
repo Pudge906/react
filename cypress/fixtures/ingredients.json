@@ -1,0 +1,47 @@
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "bun-1",
+      "name": "Флюоресцентная булка R2-D3",
+      "type": "bun",
+      "proteins": 100,
+      "fat": 20,
+      "carbohydrates": 50,
+      "calories": 420,
+      "price": 988,
+      "image": "https://example.com/bun.png",
+      "image_mobile": "https://example.com/bun-mobile.png",
+      "image_large": "https://example.com/bun-large.png",
+      "__v": 0
+    },
+    {
+      "_id": "main-1",
+      "name": "Филе Люминесцентного тетраодонтимформа",
+      "type": "main",
+      "proteins": 50,
+      "fat": 10,
+      "carbohydrates": 5,
+      "calories": 200,
+      "price": 500,
+      "image": "https://example.com/main.png",
+      "image_mobile": "https://example.com/main-mobile.png",
+      "image_large": "https://example.com/main-large.png",
+      "__v": 0
+    },
+    {
+      "_id": "sauce-1",
+      "name": "Соус Spicy-X",
+      "type": "sauce",
+      "proteins": 5,
+      "fat": 15,
+      "carbohydrates": 10,
+      "calories": 100,
+      "price": 150,
+      "image": "https://example.com/sauce.png",
+      "image_mobile": "https://example.com/sauce-mobile.png",
+      "image_large": "https://example.com/sauce-large.png",
+      "__v": 0
+    }
+  ]
+}

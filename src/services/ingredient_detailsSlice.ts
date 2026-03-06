@@ -10,7 +10,7 @@ type IngredientDetailsState = {
   isModalOpen: boolean;
 };
 
-const initialState: IngredientDetailsState = {
+export const initialState: IngredientDetailsState = {
   currentIngredient: null,
   isModalOpen: false,
 };
@@ -33,7 +33,7 @@ const ingredientDetailsSlice = createSlice({
       state.isModalOpen = false;
     },
 
-    resetIngredientDetails: () => initialState,
+    resetIngredientDetails: () => ({ ...initialState }),
   },
 });
 

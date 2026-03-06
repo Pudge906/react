@@ -86,7 +86,13 @@ export function IngredientCards(props: IngredientCardsProps): React.ReactElement
           <div className={style.verticalBlock}>
             {safeBunItems.map((bun) => (
               <DraggableIngredient key={bun._id} ingredient={bun}>
-                <li className={style.column} onClick={() => handleIngredientClick(bun)}>
+                {/* ✅ ДОБАВЛЕНО: data-testid и data-type для Cypress */}
+                <li
+                  className={style.column}
+                  onClick={() => handleIngredientClick(bun)}
+                  data-testid="ingredient-card"
+                  data-type={bun.type}
+                >
                   {getIngredientCount(bun) > 0 && (
                     <div className={style.counter}>{getIngredientCount(bun)}</div>
                   )}
@@ -111,9 +117,12 @@ export function IngredientCards(props: IngredientCardsProps): React.ReactElement
           <div className={style.verticalBlock}>
             {safeSauceItems.map((sauce) => (
               <DraggableIngredient key={sauce._id} ingredient={sauce}>
+                {/* ✅ ДОБАВЛЕНО: data-testid и data-type для Cypress */}
                 <li
                   className={style.column}
                   onClick={() => handleIngredientClick(sauce)}
+                  data-testid="ingredient-card"
+                  data-type={sauce.type}
                 >
                   {getIngredientCount(sauce) > 0 && (
                     <div className={style.counter}>{getIngredientCount(sauce)}</div>
@@ -139,7 +148,13 @@ export function IngredientCards(props: IngredientCardsProps): React.ReactElement
           <div className={style.verticalBlock}>
             {safeMainItems.map((main) => (
               <DraggableIngredient key={main._id} ingredient={main}>
-                <li className={style.column} onClick={() => handleIngredientClick(main)}>
+                {/* ✅ ДОБАВЛЕНО: data-testid и data-type для Cypress */}
+                <li
+                  className={style.column}
+                  onClick={() => handleIngredientClick(main)}
+                  data-testid="ingredient-card"
+                  data-type={main.type}
+                >
                   {getIngredientCount(main) > 0 && (
                     <div className={style.counter}>{getIngredientCount(main)}</div>
                   )}
