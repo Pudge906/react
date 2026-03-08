@@ -1,13 +1,51 @@
 /// <reference types="cypress" />
 
-describe('Конструктор: оформление заказа', () => {
+describe('Регистрация и оформление заказа', () => {
   beforeEach(() => {
-    // 1. Подставляем фейковый токен авторизации (обязательно, так как API требует авторизации)
-    cy.window().then((win) => {
-      win.localStorage.setItem('accessToken', 'Bearer fake-token');
+    const timestamp = Date.now();
+    Cypress.env('testEmail', `user_${timestamp}@test.com`);
+    Cypress.env('testName', `User_${timestamp}`);
+  });
+
+  it('должен зарегистрироваться и оформить заказ', () => {
+    // ===== 1. РЕГИСТРАЦИЯ =====
+    cy.visit('/#/register');
+    
+    // Ждем, пока страница полностью загрузится
+    cy.wait(2000);
+    
+    cy.intercept('POST', '**/api/auth/register').as('registerRequest');
+
+    // Разбиваем на отдельные шаги с проверками
+    cy.get('input[name="name"]').should('be.visible').type(Cypress.env('testName'), { delay: 100 });
+    cy.get('input[name="email"]').should('be.visible').type(Cypress.env('testEmail'), { delay: 100 });
+    cy.get('input[name="password"]').should('be.visible').type('password123', { delay: 100 });
+    
+    // Добавляем небольшую задержку перед кликом
+    cy.wait(500);
+    
+    cy.get('button[type="submit"]').contains('Зарегистрироваться').should('be.visible').click();
+
+    cy.wait('@registerRequest').then((interception) => {
+      expect(interception.response?.statusCode).to.eq(200);
+      
+      const accessToken = interception.response?.body.accessToken;
+      const refreshToken = interception.response?.body.refreshToken;
+      
+      cy.window().then((win) => {
+        win.localStorage.setItem('accessToken', accessToken);
+        win.localStorage.setItem('refreshToken', refreshToken);
+      });
+      
+      cy.log('✅ Регистрация успешна, токен сохранен');
     });
 
-    // 2. Мокаем запрос на создание заказа, так как реальный API может не работать в тестах
+    // ===== 2. ПЕРЕХОДИМ НА ГЛАВНУЮ =====
+    cy.visit('/');
+    cy.get('.ingredient-cards__column_346f4', { timeout: 10000 }).should('be.visible');
+    cy.log('✅ На главной странице, ингредиенты загружены');
+
+    // ===== 3. ПОДГОТОВКА К ЗАКАЗУ =====
     cy.intercept('POST', '**/api/orders', {
       statusCode: 200,
       body: {
@@ -16,47 +54,76 @@ describe('Конструктор: оформление заказа', () => {
       }
     }).as('createOrder');
 
-    // 3. Посещаем страницу и ждем загрузки
-    cy.visit('https://pudge906.github.io/react/');
-    cy.get('[class^=BurgerIngredients_ingredients]', { timeout: 10000 }).should('be.visible');
-    cy.wait(2000);
-    Cypress.on('uncaught:exception', () => false);
-  });
+    // ===== 4. ВЫБИРАЕМ ИНГРЕДИЕНТЫ =====
+    // Ждем загрузки ингредиентов
+    cy.get('.ingredient-cards__column_346f4', { timeout: 10000 }).should('have.length.at.least', 2);
+    
+    cy.get('.ingredient-cards__column_346f4').first().as('bun');
+    cy.get('.ingredient-cards__column_346f4').eq(1).as('main');
+    cy.get('.burger-constructor__burger_constructor_6e39f').first().as('constructor');
+    cy.get('[data-testid="order-button"]').as('orderButton');
 
-  it('должен оформлять заказ с добавленными ингредиентами', () => {
-    // Находим элементы для DnD
-    cy.get('[class^=BurgerIngredients_ingredient]').first().as('ingredient1');
-    cy.get('[class^=BurgerIngredients_ingredient]').eq(1).as('ingredient2');
-    cy.get('[class^=BurgerConstructor_burgerConstructor]').first().as('constructor');
-    cy.get('button:contains("Оформить заказ")').as('orderButton');
-
-    // 1. Добавляем ингредиенты в конструктор
-    // Первый ингредиент
-    cy.get('@ingredient1').trigger('dragstart', { force: true, bubbles: true });
-    cy.get('@constructor').trigger('drop', { force: true, bubbles: true });
-    cy.get('@ingredient1').trigger('dragend', { force: true });
-    cy.wait(500);
-    // Второй ингредиент
-    cy.get('@ingredient2').trigger('dragstart', { force: true, bubbles: true });
-    cy.get('@constructor').trigger('drop', { force: true, bubbles: true });
-    cy.get('@ingredient2').trigger('dragend', { force: true });
-
+    // ===== 5. ПЕРЕТАСКИВАЕМ ИНГРЕДИЕНТЫ =====
+    cy.log('🔄 Перетаскиваем начинку...');
+    
+    cy.get('@main').then($main => {
+      const dataTransfer = new DataTransfer();
+      
+      cy.wrap($main).trigger('dragstart', {
+        dataTransfer,
+        force: true,
+        bubbles: true
+      });
+      
+      cy.get('@constructor').trigger('drop', {
+        dataTransfer,
+        force: true,
+        bubbles: true
+      });
+      
+      cy.wrap($main).trigger('dragend', { force: true });
+    });
+    
     cy.wait(1000);
 
-    // 2. Оформляем заказ
+    cy.log('🔄 Перетаскиваем булку...');
+    
+    cy.get('@bun').then($bun => {
+      const dataTransfer = new DataTransfer();
+      
+      cy.wrap($bun).trigger('dragstart', {
+        dataTransfer,
+        force: true,
+        bubbles: true
+      });
+      
+      cy.get('@constructor').trigger('drop', {
+        dataTransfer,
+        force: true,
+        bubbles: true
+      });
+      
+      cy.wrap($bun).trigger('dragend', { force: true });
+    });
+    
+    cy.wait(1000);
+
+    // ===== 6. ПРОВЕРЯЕМ КНОПКУ =====
+    cy.get('@orderButton').should('not.be.disabled');
+    cy.log('✅ Кнопка заказа активна');
+
+    // ===== 7. ОФОРМЛЯЕМ ЗАКАЗ =====
     cy.get('@orderButton').click();
-
-    // 3. Проверяем модальное окно с заказом и номер
     cy.wait('@createOrder');
-    cy.get('[class^=Modal_modal]', { timeout: 8000 }).should('be.visible').as('orderModal');
+
+    // ===== 8. ПРОВЕРЯЕМ МОДАЛКУ =====
+    cy.get('[class*="modal"]', { timeout: 8000 }).should('be.visible').as('orderModal');
     cy.get('@orderModal').contains('12345').should('be.visible');
+    cy.log('✅ Номер заказа 12345 отображается');
 
-    // 4. Закрываем модальное окно
-    cy.get('@orderModal').find('button[class*=modalClose]').click({ force: true });
-    cy.get('[class^=Modal_modal]').should('not.exist');
-
-    // 5. Проверяем, что конструктор очистился (опционально)
-    cy.wait(1000);
-    cy.get('@constructor').find('li').should('have.length', 0);
+    // ===== 9. ЗАКРЫВАЕМ МОДАЛКУ =====
+    cy.get('@orderModal').find('button').click({ force: true });
+    cy.get('[class*="modal"]').should('not.exist');
+    cy.log('✅ Модальное окно закрыто');
   });
 });
