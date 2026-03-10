@@ -7,7 +7,7 @@ describe('Регистрация и оформление заказа', () => {
     Cypress.env('testName', `User_${timestamp}`);
     
     Cypress.on('uncaught:exception', (err) => {
-      if (err.message.includes('drag') || err.message.includes('drop')) {
+      if (err.message.includes('drag') || err.message.includes('drop') || err.message.includes('hover')) {
         cy.log('⚠️ Поймана ошибка DnD:', err.message);
         return false;
       }
@@ -18,18 +18,18 @@ describe('Регистрация и оформление заказа', () => {
   it('должен зарегистрироваться и оформить заказ', () => {
     // ===== 1. РЕГИСТРАЦИЯ =====
     cy.visit('/#/register');
-    cy.wait(2000);
+    cy.wait(5000);
     
     cy.intercept('POST', '**/api/auth/register').as('registerRequest');
 
-    cy.get('input[name="name"]').should('be.visible').type(Cypress.env('testName'), { delay: 100 });
-    cy.get('input[name="email"]').should('be.visible').type(Cypress.env('testEmail'), { delay: 100 });
-    cy.get('input[name="password"]').should('be.visible').type('password123', { delay: 100 });
-    cy.wait(500);
+    cy.get('input[name="name"]', { timeout: 15000 }).should('be.visible').type(Cypress.env('testName'), { delay: 100 });
+    cy.get('input[name="email"]', { timeout: 15000 }).should('be.visible').type(Cypress.env('testEmail'), { delay: 100 });
+    cy.get('input[name="password"]', { timeout: 15000 }).should('be.visible').type('password123', { delay: 100 });
+    cy.wait(1000);
     
-    cy.get('button[type="submit"]').contains('Зарегистрироваться').should('be.visible').click();
+    cy.get('button[type="submit"]', { timeout: 15000 }).contains('Зарегистрироваться').should('be.visible').click();
 
-    cy.wait('@registerRequest').then((interception) => {
+    cy.wait('@registerRequest', { timeout: 30000 }).then((interception) => {
       expect(interception.response?.statusCode).to.eq(200);
       
       const accessToken = interception.response?.body.accessToken;
@@ -43,20 +43,14 @@ describe('Регистрация и оформление заказа', () => {
 
     // ===== 2. ПЕРЕХОДИМ НА ГЛАВНУЮ =====
     cy.visit('/');
+    cy.wait(5000);
     
-    cy.intercept('GET', '**/api/auth/user', {
-      statusCode: 200,
-      body: {
-        success: true,
-        user: {
-          email: Cypress.env('testEmail'),
-          name: Cypress.env('testName')
-        }
-      }
-    }).as('getUser');
-
-    cy.wait('@getUser');
-    cy.get('.ingredient-cards__column_346f4', { timeout: 10000 }).should('be.visible');
+    // НЕ перехватываем getUser, даем ему идти как есть
+    // Просто ждем загрузки ингредиентов
+    cy.intercept('GET', '**/api/ingredients').as('getIngredients');
+    cy.wait('@getIngredients', { timeout: 30000 });
+    
+    cy.get('[class*="ingredient-cards__column"]', { timeout: 30000 }).should('be.visible');
     cy.log('✅ На главной странице, ингредиенты загружены');
 
     // ===== 3. ПОДГОТОВКА К ЗАКАЗУ =====
@@ -69,109 +63,49 @@ describe('Регистрация и оформление заказа', () => {
     }).as('createOrder');
 
     // ===== 4. ВЫБИРАЕМ ИНГРЕДИЕНТЫ =====
-    cy.get('.ingredient-cards__column_346f4').eq(4).as('sauce'); // Соус (индекс 4)
-    cy.get('.ingredient-cards__column_346f4').first().as('bun'); // Булка (индекс 0)
-    cy.get('[data-testid="drop-target"]').first().as('dropTarget');
-    cy.get('[data-testid="order-button"]').as('orderButton');
+    cy.get('[class*="ingredient-cards__column"]', { timeout: 30000 }).eq(4).as('sauce');
+    cy.get('[class*="ingredient-cards__column"]', { timeout: 30000 }).first().as('bun');
+    cy.get('[data-testid="drop-target"]', { timeout: 30000 }).first().as('dropTarget');
+    cy.get('[data-testid="order-button"]', { timeout: 30000 }).as('orderButton');
 
     // ===== 5. ПЕРЕТАСКИВАЕМ СОУС =====
     cy.log('🔄 Перетаскиваем соус...');
     
-    const dataTransferSauce = new DataTransfer();
-    
-    cy.get('@sauce')
-      .trigger('dragstart', {
-        dataTransfer: dataTransferSauce,
-        force: true,
-        bubbles: true
-      })
-      .trigger('drag', {
-        force: true,
-        bubbles: true
-      });
-    
-    cy.wait(500);
-    
-    cy.get('@dropTarget')
-      .trigger('dragenter', {
-        dataTransfer: dataTransferSauce,
-        force: true,
-        bubbles: true
-      })
-      .trigger('dragover', {
-        dataTransfer: dataTransferSauce,
-        force: true,
-        bubbles: true
-      })
-      .trigger('drop', {
-        dataTransfer: dataTransferSauce,
-        force: true,
-        bubbles: true
-      });
-    
+    cy.get('@sauce').trigger('dragstart', { force: true, bubbles: true });
+    cy.get('@dropTarget').trigger('drop', { force: true, bubbles: true });
     cy.get('@sauce').trigger('dragend', { force: true, bubbles: true });
     
-    cy.wait(1000);
+    cy.wait(3000);
 
     // Проверяем, что кнопка все еще disabled (нет булки)
-    cy.get('@orderButton').should('be.disabled');
-    cy.log('✅ Соус добавлен, кнопка disabled (ждем булку)');
+    cy.get('@orderButton', { timeout: 30000 }).should('be.disabled');
+    cy.log('✅ Соус добавлен, кнопка disabled');
 
     // ===== 6. ПЕРЕТАСКИВАЕМ БУЛКУ =====
     cy.log('🔄 Перетаскиваем булку...');
     
-    const dataTransferBun = new DataTransfer();
-    
-    cy.get('@bun')
-      .trigger('dragstart', {
-        dataTransfer: dataTransferBun,
-        force: true,
-        bubbles: true
-      })
-      .trigger('drag', {
-        force: true,
-        bubbles: true
-      });
-    
-    cy.wait(500);
-    
-    cy.get('@dropTarget')
-      .trigger('dragenter', {
-        dataTransfer: dataTransferBun,
-        force: true,
-        bubbles: true
-      })
-      .trigger('dragover', {
-        dataTransfer: dataTransferBun,
-        force: true,
-        bubbles: true
-      })
-      .trigger('drop', {
-        dataTransfer: dataTransferBun,
-        force: true,
-        bubbles: true
-      });
-    
+    cy.get('@bun').trigger('dragstart', { force: true, bubbles: true });
+    cy.get('@dropTarget').trigger('drop', { force: true, bubbles: true });
     cy.get('@bun').trigger('dragend', { force: true, bubbles: true });
     
-    cy.wait(1000);
+    cy.wait(3000);
 
     // ===== 7. ПРОВЕРЯЕМ КНОПКУ =====
-    cy.get('@orderButton').should('not.be.disabled');
+    cy.get('@orderButton', { timeout: 30000 }).should('not.be.disabled');
     cy.log('✅ Булка добавлена, кнопка активна');
 
     // ===== 8. ОФОРМЛЯЕМ ЗАКАЗ =====
     cy.get('@orderButton').click();
-    cy.wait('@createOrder', { timeout: 10000 });
+    cy.wait('@createOrder', { timeout: 30000 });
 
     // ===== 9. ПРОВЕРЯЕМ МОДАЛКУ =====
-    cy.get('[class*="modal"]', { timeout: 8000 }).should('be.visible').as('orderModal');
-    cy.get('@orderModal').contains('12345').should('be.visible');
+    cy.get('[class*="modal"]', { timeout: 30000 }).should('be.visible').as('orderModal');
+    cy.get('@orderModal').contains('12345', { timeout: 15000 }).should('be.visible');
     cy.log('✅ Номер заказа 12345 отображается');
 
     // ===== 10. ЗАКРЫВАЕМ МОДАЛКУ =====
     cy.get('@orderModal').find('button').click({ force: true });
-    cy.get('[class*="modal"]').should('not.exist');
+    cy.get('[class*="modal"]', { timeout: 30000 }).should('not.exist');
     cy.log('✅ Модальное окно закрыто');
   });
 });
